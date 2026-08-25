@@ -21,7 +21,11 @@ class Check:
     name: str
     kind: str
     visibility: str
-    path: Path
+    path: Path | None = None
+    command: tuple[str, ...] = ()
+    expected_exit_code: int = 0
+    expected_stdout: str = ""
+    expected_files: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,25 @@
+id: cli-report-generation-v1
+version: 1
+repository: repository
+runtime:
+  image: patchbench-python-cli:0.1
+  dockerfile: Dockerfile
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+  cpu_cores: 1
+checks:
+  - name: visible-slug-output
+    type: cli
+    visibility: public
+    command: [python, report.py, Ada Lovelace]
+    expected:
+      stdout: "ada-lovelace\n"
+  - name: report-file-contract
+    type: cli
+    visibility: hidden
+    command: [python, report.py, Grace Hopper, --output, /tmp/patchbench-output/report.json]
+    expected:
+      stdout: "grace-hopper\n"
+      files:
+        report.json: "{\"name\": \"Grace Hopper\", \"slug\": \"grace-hopper\"}\n"

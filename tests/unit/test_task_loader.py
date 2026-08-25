@@ -35,3 +35,12 @@ checks: []
 
     with pytest.raises(TaskValidationError, match="version must be a positive integer"):
         load_task(tmp_path)
+
+
+def test_loads_cli_contract():
+    task = load_task(Path("fixtures/cli-report-generation"))
+    public_check, hidden_check = task.checks
+
+    assert public_check.kind == "cli"
+    assert public_check.command == ("python", "report.py", "Ada Lovelace")
+    assert hidden_check.expected_files == (("report.json", '{"name": "Grace Hopper", "slug": "grace-hopper"}\n'),)

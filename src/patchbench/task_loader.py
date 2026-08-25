@@ -76,16 +76,56 @@ def _load_check(task_directory: Path, raw: object, index: int) -> Check:
     name = _require_string(raw, "name")
     kind = _require_string(raw, "type")
     visibility = _require_string(raw, "visibility")
-    if kind not in {"pytest", "differential"}:
+    if kind not in {"pytest", "differential", "cli"}:
         raise TaskValidationError(f"checks[{index}] has unsupported type: {kind}")
     if visibility not in {"public", "hidden"}:
         raise TaskValidationError(f"checks[{index}] has invalid visibility: {visibility}")
-    path = task_directory / _require_string(raw, "path")
-    if kind == "pytest" and not path.is_dir():
-        raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
-    if kind == "differential" and not path.is_file():
-        raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
-    return Check(name=name, kind=kind, visibility=visibility, path=path)
+    path = None
+    if kind in {"pytest", "differential"}:
+        path = task_directory / _require_string(raw, "path")
+        if not path.exists() or (kind == "pytest" and not path.is_dir()) or (kind == "differential" and not path.is_file()):
+            raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
+    if kind != "cli":
+        return Check(name=name, kind=kind, visibility=visibility, path=path)
+    command = _require_command(raw, index)
+    expected = _require_object(raw, "expected")
+    expected_exit_code = expected.get("exit_code", 0)
+    if not isinstance(expected_exit_code, int) or isinstance(expected_exit_code, bool):
+        raise TaskValidationError(f"checks[{index}].expected.exit_code must be an integer")
+    expected_stdout = expected.get("stdout", "")
+    if not isinstance(expected_stdout, str):
+        raise TaskValidationError(f"checks[{index}].expected.stdout must be a string")
+    expected_files = _load_expected_files(expected, index)
+    return Check(
+        name=name,
+        kind=kind,
+        visibility=visibility,
+        command=command,
+        expected_exit_code=expected_exit_code,
+        expected_stdout=expected_stdout,
+        expected_files=expected_files,
+    )
+
+
+def _require_command(value: dict, index: int) -> tuple[str, ...]:
+    command = value.get("command")
+    if not isinstance(command, list) or not command or any(not isinstance(item, str) or not item for item in command):
+        raise TaskValidationError(f"checks[{index}].command must be a non-empty list of strings")
+    return tuple(command)
+
+
+def _load_expected_files(value: dict, index: int) -> tuple[tuple[str, str], ...]:
+    files = value.get("files", {})
+    if not isinstance(files, dict):
+        raise TaskValidationError(f"checks[{index}].expected.files must be an object")
+    loaded = []
+    for path, content in files.items():
+        if not isinstance(path, str) or not path or Path(path).is_absolute() or ".." in Path(path).parts:
+            raise TaskValidationError(f"checks[{index}].expected.files has an unsafe path")
+        if not isinstance(content, str):
+            raise TaskValidationError(f"checks[{index}].expected.files values must be strings")
+        loaded.append((path, content))
+    return tuple(loaded)
 
 
 def _require_object(value: dict, field: str) -> dict:

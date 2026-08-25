@@ -59,6 +59,27 @@ class DockerRunner:
             duration_seconds=baseline_result.duration_seconds + candidate_result.duration_seconds,
         )
 
+    def run_cli(self, task: Task, workspace: Path, check: Check) -> CommandResult:
+        self._ensure_image(task)
+        command = self._container_command(task, workspace)
+        expectation = {
+            "command": check.command,
+            "exit_code": check.expected_exit_code,
+            "stdout": check.expected_stdout,
+            "files": dict(check.expected_files),
+        }
+        command.extend(
+            [
+                "--mount",
+                f"type=bind,source={Path(__file__).with_name('cli_check.py').resolve()},target=/cli_check.py,readonly",
+                task.image,
+                "python",
+                "/cli_check.py",
+                json.dumps(expectation, sort_keys=True),
+            ]
+        )
+        return self._run_check_command(command, task.constraints.timeout_seconds)
+
     def _run_scenario(self, task: Task, workspace: Path, scenario: Path) -> CommandResult:
         command = self._container_command(task, workspace)
         command.extend(

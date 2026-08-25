@@ -1,4 +1,5 @@
 import subprocess
+import json
 from pathlib import Path
 
 import pytest
@@ -63,3 +64,42 @@ def test_reports_timed_out_check(monkeypatch):
     assert result.returncode == 124
     assert result.stdout == "partial output"
     assert result.stderr == "timed out"
+
+
+def test_runs_cli_check_with_declared_expectations(monkeypatch):
+    task = Task(
+        identifier="test",
+        version=1,
+        root=Path("."),
+        repository=Path("."),
+        image="python:3.13-slim",
+        dockerfile=None,
+        constraints=Constraints(timeout_seconds=1, memory_megabytes=64, cpu_cores=1),
+        checks=(),
+    )
+    check = Check(
+        name="test",
+        kind="cli",
+        visibility="public",
+        command=("python", "report.py"),
+        expected_stdout="report\n",
+        expected_files=(("report.json", "{}\n"),),
+    )
+    captured = []
+
+    def complete(command, **kwargs):
+        captured.extend(command)
+        return subprocess.CompletedProcess(command, 0, "evidence", "")
+
+    monkeypatch.setattr(subprocess, "run", complete)
+
+    result = DockerRunner().run_cli(task, Path("."), check)
+
+    expectation = json.loads(captured[-1])
+    assert result.returncode == 0
+    assert expectation == {
+        "command": ["python", "report.py"],
+        "exit_code": 0,
+        "files": {"report.json": "{}\n"},
+        "stdout": "report\n",
+    }

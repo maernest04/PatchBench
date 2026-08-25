@@ -1,0 +1,27 @@
+diff --git a/report.py b/report.py
+index a765f83..1b72516 100644
+--- a/report.py
++++ b/report.py
+@@ -1,12 +1,21 @@
+ import argparse
++import json
++from pathlib import Path
+ 
+ 
+ def main():
+     parser = argparse.ArgumentParser()
+     parser.add_argument("name")
++    parser.add_argument("--output")
+     arguments = parser.parse_args()
+-    print(arguments.name.lower())
++    slug = "-".join(arguments.name.lower().split())
++    print(slug)
++    if arguments.output:
++        Path(arguments.output).parent.mkdir(parents=True, exist_ok=True)
++        Path(arguments.output).write_text(
++            json.dumps({"name": arguments.name, "slug": slug}) + "\n"
++        )
+ 
+ 
+ if __name__ == "__main__":
+     main()

@@ -36,6 +36,11 @@
 - Added Docker integration coverage for both fixture candidates, with a clean skip when the local daemon is unavailable.
 - Added an evaluator quality ledger for recording suspected false positives and false negatives.
 
+## 2026-08-25: CLI contract
+
+- Added a CLI evaluator that verifies a command's exit code, exact stdout, and declared output files in an isolated temporary directory.
+- Added the CLI report-generation fixture, where a superficial candidate passes the public slug-output contract but fails the hidden JSON file contract.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

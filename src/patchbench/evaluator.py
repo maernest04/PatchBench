@@ -27,7 +27,10 @@ def evaluate(task: Task, patch: Path, runner: DockerRunner | None = None) -> Eva
         try:
             for check in task.checks:
                 if check.kind == "differential":
+                    assert check.path is not None
                     command = active_runner.run_differential(task, baseline, workspace, check)
+                elif check.kind == "cli":
+                    command = active_runner.run_cli(task, workspace, check)
                 else:
                     command = active_runner.run_check(task, workspace, check)
                 result = CheckResult(check=check, command=command)

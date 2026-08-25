@@ -125,7 +125,7 @@ Prove that PatchBench is a general software-task evaluator rather than a backend
 
 ### Checklist
 
-- [ ] Add a CLI-output evaluator for commands, exit codes, and filesystem effects.
+- [x] Add a CLI-output evaluator for commands, exit codes, and filesystem effects.
 - [ ] Add a library/API-compatibility evaluator.
 - [ ] Add a refactor task that relies on behavioral preservation.
 - [ ] Add a task with an explicit policy or security constraint.
