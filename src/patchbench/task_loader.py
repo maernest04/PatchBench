@@ -76,12 +76,14 @@ def _load_check(task_directory: Path, raw: object, index: int) -> Check:
     name = _require_string(raw, "name")
     kind = _require_string(raw, "type")
     visibility = _require_string(raw, "visibility")
-    if kind != "pytest":
+    if kind not in {"pytest", "differential"}:
         raise TaskValidationError(f"checks[{index}] has unsupported type: {kind}")
     if visibility not in {"public", "hidden"}:
         raise TaskValidationError(f"checks[{index}] has invalid visibility: {visibility}")
     path = task_directory / _require_string(raw, "path")
-    if not path.is_dir():
+    if kind == "pytest" and not path.is_dir():
+        raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
+    if kind == "differential" and not path.is_file():
         raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
     return Check(name=name, kind=kind, visibility=visibility, path=path)
 

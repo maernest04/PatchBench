@@ -52,6 +52,9 @@ checks:
   - type: pytest
     visibility: hidden
     path: hidden/tests
+  - type: differential
+    visibility: hidden
+    path: hidden/scenarios/delete_then_read.py
 ```
 
 The exact schema is finalized in Phase 0. `runtime.image` identifies the container image used for checks. When `runtime.dockerfile` is present, PatchBench builds that image from the task directory before executing checks.
@@ -62,6 +65,7 @@ The exact schema is finalized in Phase 0. `runtime.image` identifies the contain
 - Public files are the complete material available to an evaluated agent.
 - Hidden files cannot be copied or mounted into the agent workspace.
 - Checks define observable evidence, not an LLM-derived quality score.
+- A differential check runs a scenario against baseline and candidate workspaces and compares their normalized output.
 - A task must define enough conditions to classify a result honestly.
 - An ambiguous task must return `INCONCLUSIVE` rather than create a misleading failure.
 

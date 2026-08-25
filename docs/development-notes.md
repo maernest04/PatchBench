@@ -24,6 +24,12 @@
 - Verified a passing candidate in Docker, then replayed it with the same `PASS` classification.
 - Verified a stale-cache candidate passes public tests, fails the hidden test in Docker, and retains the hidden pytest output as evidence.
 
+## 2026-08-25: Differential preservation proof
+
+- Added a hidden differential scenario that runs the same deletion-and-read sequence against the baseline and candidate workspaces.
+- The scenario serializes normalized observations, allowing PatchBench to block a candidate when it changes established behavior.
+- Verified in Docker that the correct patch passes all three checks and the stale-cache patch fails both hidden checks despite passing the public check.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

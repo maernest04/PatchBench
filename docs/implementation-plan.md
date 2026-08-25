@@ -83,9 +83,9 @@ Turn a failed check into understandable, replayable evidence.
 - [x] Create structured models for commands, check results, and evidence artifacts.
 - [ ] Store task ID and version, patch digest, evaluator version, seed, and environment/image digest.
 - [x] Add a durable local run store.
-- [ ] Add baseline execution when a task requires behavior preservation.
-- [ ] Implement one deterministic differential evaluator.
-- [ ] Preserve relevant operation sequences and normalized observations.
+- [x] Add baseline execution when a task requires behavior preservation.
+- [x] Implement one deterministic differential evaluator.
+- [x] Preserve relevant operation sequences and normalized observations.
 - [x] Assign a run ID to each complete evaluation.
 - [x] Implement `patchbench show <run-id>`.
 - [x] Implement `patchbench replay <run-id>`.

@@ -14,9 +14,8 @@ class PatchApplicationError(RuntimeError):
 
 def create_candidate_workspace(repository: Path, patch: Path) -> tempfile.TemporaryDirectory[str]:
     validate_patch(patch)
-    temporary_directory = tempfile.TemporaryDirectory(prefix="patchbench-")
+    temporary_directory = create_workspace(repository)
     destination = Path(temporary_directory.name) / "repository"
-    shutil.copytree(repository, destination)
     result = subprocess.run(
         ["patch", "--batch", "--forward", "-p1", "-i", str(patch.resolve())],
         cwd=destination,
@@ -27,6 +26,12 @@ def create_candidate_workspace(repository: Path, patch: Path) -> tempfile.Tempor
     if result.returncode != 0:
         temporary_directory.cleanup()
         raise PatchApplicationError(result.stderr.strip() or result.stdout.strip() or "patch could not be applied")
+    return temporary_directory
+
+
+def create_workspace(repository: Path) -> tempfile.TemporaryDirectory[str]:
+    temporary_directory = tempfile.TemporaryDirectory(prefix="patchbench-")
+    shutil.copytree(repository, Path(temporary_directory.name) / "repository")
     return temporary_directory
 
 

@@ -1,3 +1,4 @@
+import json
 import subprocess
 import time
 from pathlib import Path
@@ -15,7 +16,64 @@ class DockerRunner:
 
     def run_check(self, task: Task, workspace: Path, check: Check) -> CommandResult:
         self._ensure_image(task)
-        command = [
+        command = self._container_command(task, workspace)
+        command.extend(
+            [
+                "--mount",
+                f"type=bind,source={check.path.resolve()},target=/checks,readonly",
+                task.image,
+                "python",
+                "-m",
+                "pytest",
+                "-p",
+                "no:cacheprovider",
+                "/checks",
+            ]
+        )
+        return self._run_check_command(command, task.constraints.timeout_seconds)
+
+    def run_differential(self, task: Task, baseline: Path, candidate: Path, check: Check) -> CommandResult:
+        self._ensure_image(task)
+        baseline_result = self._run_scenario(task, baseline, check.path)
+        candidate_result = self._run_scenario(task, candidate, check.path)
+        payload = {
+            "baseline": _command_payload(baseline_result),
+            "candidate": _command_payload(candidate_result),
+        }
+        if baseline_result.returncode != 0 or candidate_result.returncode != 0:
+            return CommandResult(
+                returncode=1,
+                stdout=json.dumps(payload, sort_keys=True),
+                stderr="differential scenario execution failed",
+                duration_seconds=baseline_result.duration_seconds + candidate_result.duration_seconds,
+            )
+
+        baseline_output = _normalize_output(baseline_result.stdout)
+        candidate_output = _normalize_output(candidate_result.stdout)
+        payload["baseline"]["normalized_stdout"] = baseline_output
+        payload["candidate"]["normalized_stdout"] = candidate_output
+        return CommandResult(
+            returncode=0 if baseline_output == candidate_output else 1,
+            stdout=json.dumps(payload, sort_keys=True),
+            stderr="" if baseline_output == candidate_output else "baseline and candidate behavior differ",
+            duration_seconds=baseline_result.duration_seconds + candidate_result.duration_seconds,
+        )
+
+    def _run_scenario(self, task: Task, workspace: Path, scenario: Path) -> CommandResult:
+        command = self._container_command(task, workspace)
+        command.extend(
+            [
+                "--mount",
+                f"type=bind,source={scenario.resolve()},target=/scenario.py,readonly",
+                task.image,
+                "python",
+                "/scenario.py",
+            ]
+        )
+        return self._run_check_command(command, task.constraints.timeout_seconds)
+
+    def _container_command(self, task: Task, workspace: Path) -> list[str]:
+        return [
             "docker",
             "run",
             "--rm",
@@ -32,29 +90,22 @@ class DockerRunner:
             "256",
             "--mount",
             f"type=bind,source={workspace.resolve()},target=/workspace,readonly",
-            "--mount",
-            f"type=bind,source={check.path.resolve()},target=/checks,readonly",
             "--workdir",
             "/workspace",
             "--env",
             "PYTHONDONTWRITEBYTECODE=1",
             "--env",
             "PYTHONPATH=/workspace",
-            task.image,
-            "python",
-            "-m",
-            "pytest",
-            "-p",
-            "no:cacheprovider",
-            "/checks",
         ]
+
+    def _run_check_command(self, command: list[str], timeout: int) -> CommandResult:
         started = time.monotonic()
         try:
             result = subprocess.run(
                 command,
                 capture_output=True,
                 text=True,
-                timeout=task.constraints.timeout_seconds,
+                timeout=timeout,
                 check=False,
             )
         except FileNotFoundError as error:
@@ -127,3 +178,19 @@ class DockerRunner:
         if result.returncode != 0 and any(message in result.stderr for message in daemon_errors):
             raise RunnerUnavailableError("Docker daemon is not running")
         return result
+
+
+def _command_payload(result: CommandResult) -> dict:
+    return {
+        "returncode": result.returncode,
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+        "duration_seconds": result.duration_seconds,
+    }
+
+
+def _normalize_output(output: str) -> str:
+    try:
+        return json.dumps(json.loads(output), sort_keys=True, separators=(",", ":"))
+    except json.JSONDecodeError:
+        return output.strip()

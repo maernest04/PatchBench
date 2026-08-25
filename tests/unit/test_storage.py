@@ -10,6 +10,9 @@ class PassingRunner:
     def run_check(self, task, workspace, check):
         return passed_command()
 
+    def run_differential(self, task, baseline, workspace, check):
+        return passed_command()
+
 
 def test_saves_task_patch_and_check_artifacts(tmp_path):
     fixture = Path("fixtures/cache-invalidation")

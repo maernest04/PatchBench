@@ -16,6 +16,16 @@ class FixtureRunner:
             duration_seconds=0.0,
         )
 
+    def run_differential(self, task, baseline, workspace, check):
+        source = (workspace / "user_store.py").read_text()
+        stale_cache = "def delete_user(self, user_id):\n        return self._users.pop" in source
+        return CommandResult(
+            returncode=1 if stale_cache else 0,
+            stdout="",
+            stderr="baseline and candidate behavior differ" if stale_cache else "",
+            duration_seconds=0.0,
+        )
+
 
 def test_correct_candidate_passes():
     fixture = Path("fixtures/cache-invalidation")
