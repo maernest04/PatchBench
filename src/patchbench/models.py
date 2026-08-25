@@ -30,6 +30,7 @@ class Task:
     root: Path
     repository: Path
     image: str
+    dockerfile: Path | None
     constraints: Constraints
     checks: tuple[Check, ...]
 

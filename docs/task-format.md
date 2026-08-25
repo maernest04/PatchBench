@@ -40,6 +40,10 @@ constraints:
   timeout_seconds: 30
   memory_megabytes: 512
 
+runtime:
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
+
 checks:
   - type: pytest
     visibility: public
@@ -49,7 +53,7 @@ checks:
     path: hidden/tests
 ```
 
-The exact schema is finalized in Phase 0. This example communicates the boundary and does not yet define every supported field.
+The exact schema is finalized in Phase 0. `runtime.image` identifies the container image used for checks. When `runtime.dockerfile` is present, PatchBench builds that image from the task directory before executing checks.
 
 ## Contract rules
 
@@ -63,4 +67,3 @@ The exact schema is finalized in Phase 0. This example communicates the boundary
 ## Candidate rules
 
 V1 accepts a unified diff. The evaluator applies it only to a temporary candidate workspace. A future agent adapter may generate the same diff, but it uses the identical evaluation path.
-

@@ -32,6 +32,14 @@ def load_task(task_directory: Path) -> Task:
 
     runtime = _require_object(raw, "runtime")
     image = _require_string(runtime, "image")
+    dockerfile_value = runtime.get("dockerfile")
+    dockerfile = None
+    if dockerfile_value is not None:
+        if not isinstance(dockerfile_value, str) or not dockerfile_value.strip():
+            raise TaskValidationError("runtime.dockerfile must be a non-empty string")
+        dockerfile = task_directory / dockerfile_value
+        if not dockerfile.is_file():
+            raise TaskValidationError(f"runtime.dockerfile does not exist: {dockerfile}")
 
     constraint_values = _require_object(raw, "constraints")
     timeout_seconds = _require_positive_int(constraint_values, "timeout_seconds")
@@ -51,6 +59,7 @@ def load_task(task_directory: Path) -> Task:
         root=task_directory,
         repository=repository,
         image=image,
+        dockerfile=dockerfile,
         constraints=Constraints(timeout_seconds=timeout_seconds, memory_megabytes=memory_megabytes),
         checks=checks,
     )

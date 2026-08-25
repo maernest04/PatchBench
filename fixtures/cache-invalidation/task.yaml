@@ -2,7 +2,8 @@ id: cache-invalidation-v1
 version: 1
 repository: repository
 runtime:
-  image: python:3.13-slim
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
 constraints:
   timeout_seconds: 30
   memory_megabytes: 256
