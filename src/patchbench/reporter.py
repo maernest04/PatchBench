@@ -12,6 +12,13 @@ def render_text(result: EvaluationResult) -> str:
     for check_result in result.checks:
         status = "PASS" if check_result.command.returncode == 0 else "FAIL"
         lines.append(f"{status} {check_result.check.visibility} check: {check_result.check.name}")
+        if check_result.check.kind == "differential" and check_result.command.returncode != 0:
+            try:
+                evidence = json.loads(check_result.command.stdout)
+                lines.append(f"Baseline output: {evidence['baseline']['normalized_stdout']}")
+                lines.append(f"Candidate output: {evidence['candidate']['normalized_stdout']}")
+            except (json.JSONDecodeError, KeyError):
+                pass
     if result.reason:
         lines.append(f"Reason: {result.reason}")
     return "\n".join(lines)

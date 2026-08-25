@@ -42,6 +42,14 @@ def evaluate(task: Task, patch: Path, runner: DockerRunner | None = None) -> Eva
                 checks=tuple(check_results),
                 reason=str(error),
             )
+        except Exception as error:
+            return EvaluationResult(
+                classification=Classification.INCONCLUSIVE,
+                task=task,
+                patch=patch,
+                checks=tuple(check_results),
+                reason=f"evaluator failure: {error}",
+            )
 
     if failure_reason:
         return EvaluationResult(

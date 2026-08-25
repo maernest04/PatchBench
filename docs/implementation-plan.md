@@ -104,14 +104,14 @@ Demonstrate that PatchBench itself is trustworthy enough to evaluate candidate c
 
 ### Checklist
 
-- [ ] Unit-test schemas, task loading, patch validation, classification, normalization, and reporting.
-- [ ] Integration-test Docker execution, public checks, hidden checks, and cleanup.
-- [ ] Test malformed task definitions, invalid patches, command timeouts, and evaluator crashes.
-- [ ] Test that hidden files are unavailable in the agent-visible workspace.
-- [ ] Test that correct candidates pass and intentionally incorrect candidates fail.
-- [ ] Repeat deterministic fixture runs to validate stability.
-- [ ] Track false-positive and false-negative cases discovered during fixture design.
-- [ ] Verify that evaluator failures are reported distinctly from candidate failures.
+- [x] Unit-test schemas, task loading, patch validation, classification, normalization, and reporting.
+- [x] Integration-test Docker execution, public checks, hidden checks, and cleanup.
+- [x] Test malformed task definitions, invalid patches, command timeouts, and evaluator crashes.
+- [x] Test that hidden files are unavailable in the agent-visible workspace.
+- [x] Test that correct candidates pass and intentionally incorrect candidates fail.
+- [x] Repeat deterministic fixture runs to validate stability.
+- [x] Track false-positive and false-negative cases discovered during fixture design.
+- [x] Verify that evaluator failures are reported distinctly from candidate failures.
 
 ### Exit criterion
 

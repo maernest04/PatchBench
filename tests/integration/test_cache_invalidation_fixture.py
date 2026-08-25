@@ -38,3 +38,12 @@ def test_fixture_separates_visible_and_hidden_behavior(patch_name, hidden_return
 
     assert public.returncode == 0, public.stdout + public.stderr
     assert hidden.returncode == hidden_returncode, hidden.stdout + hidden.stderr
+
+
+def test_candidate_workspace_is_cleaned_up():
+    fixture = Path("fixtures/cache-invalidation").resolve()
+    with create_candidate_workspace(fixture / "repository", fixture / "candidates" / "correct.patch") as temporary_directory:
+        workspace_root = Path(temporary_directory)
+        assert workspace_root.is_dir()
+
+    assert not workspace_root.exists()

@@ -30,6 +30,12 @@
 - The scenario serializes normalized observations, allowing PatchBench to block a candidate when it changes established behavior.
 - Verified in Docker that the correct patch passes all three checks and the stale-cache patch fails both hidden checks despite passing the public check.
 
+## 2026-08-25: Evaluator quality coverage
+
+- Added checks for malformed task contracts, unsafe and unapplicable patches, command timeouts, unavailable Docker, runner crashes, output normalization, reporting, workspace cleanup, and hidden-material isolation.
+- Added Docker integration coverage for both fixture candidates, with a clean skip when the local daemon is unavailable.
+- Added an evaluator quality ledger for recording suspected false positives and false negatives.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.
