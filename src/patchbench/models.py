@@ -13,6 +13,7 @@ class Classification(StrEnum):
 class Constraints:
     timeout_seconds: int
     memory_megabytes: int
+    cpu_cores: float
 
 
 @dataclass(frozen=True)
@@ -56,3 +57,5 @@ class EvaluationResult:
     patch: Path
     checks: tuple[CheckResult, ...]
     reason: str | None = None
+    run_id: str | None = None
+    replay_of: str | None = None

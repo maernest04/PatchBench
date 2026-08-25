@@ -26,6 +26,8 @@ class DockerRunner:
             "/tmp",
             "--memory",
             f"{task.constraints.memory_megabytes}m",
+            "--cpus",
+            str(task.constraints.cpu_cores),
             "--pids-limit",
             "256",
             "--mount",

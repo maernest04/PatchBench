@@ -61,9 +61,9 @@ Evaluate one candidate patch against one task with a single CLI command.
 - [x] Load and validate `task.yaml` against the task schema.
 - [x] Create a temporary baseline workspace and candidate workspace.
 - [x] Validate and apply a unified diff only inside the candidate workspace.
-- [ ] Build and run the task's Docker execution environment with no network access by default.
-- [ ] Enforce CPU, memory, process, and wall-clock limits.
-- [ ] Run public checks and hidden checks independently.
+- [x] Build and run the task's Docker execution environment with no network access by default.
+- [x] Enforce CPU, memory, process, and wall-clock limits.
+- [x] Run public checks and hidden checks independently.
 - [x] Capture stdout, stderr, exit code, duration, and execution-failure reason.
 - [x] Emit a human-readable report and a machine-readable JSON result.
 - [x] Clean temporary workspaces after successful and failed runs.
@@ -80,17 +80,17 @@ Turn a failed check into understandable, replayable evidence.
 
 ### Checklist
 
-- [ ] Create structured models for commands, check results, findings, and evidence artifacts.
+- [x] Create structured models for commands, check results, and evidence artifacts.
 - [ ] Store task ID and version, patch digest, evaluator version, seed, and environment/image digest.
-- [ ] Add a durable local run store.
+- [x] Add a durable local run store.
 - [ ] Add baseline execution when a task requires behavior preservation.
 - [ ] Implement one deterministic differential evaluator.
 - [ ] Preserve relevant operation sequences and normalized observations.
-- [ ] Assign a run ID to each complete evaluation.
-- [ ] Implement `patchbench show <run-id>`.
-- [ ] Implement `patchbench replay <run-id>`.
-- [ ] Verify a replay produces the original classification under the same environment.
-- [ ] Ensure infrastructure failures become `INCONCLUSIVE`, not candidate `FAIL` results.
+- [x] Assign a run ID to each complete evaluation.
+- [x] Implement `patchbench show <run-id>`.
+- [x] Implement `patchbench replay <run-id>`.
+- [x] Verify a replay produces the original classification under the same environment.
+- [x] Ensure infrastructure failures become `INCONCLUSIVE`, not candidate `FAIL` results.
 
 ### Exit criterion
 

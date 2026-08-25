@@ -15,7 +15,7 @@ def test_reports_unavailable_docker_daemon(monkeypatch):
         repository=Path("."),
         image="python:3.13-slim",
         dockerfile=None,
-        constraints=Constraints(timeout_seconds=1, memory_megabytes=64),
+        constraints=Constraints(timeout_seconds=1, memory_megabytes=64, cpu_cores=1),
         checks=(),
     )
     check = Check(name="test", kind="pytest", visibility="public", path=Path("."))

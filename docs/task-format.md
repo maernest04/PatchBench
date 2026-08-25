@@ -39,6 +39,7 @@ constraints:
   network: disabled
   timeout_seconds: 30
   memory_megabytes: 512
+  cpu_cores: 1
 
 runtime:
   image: patchbench-python-pytest:0.1

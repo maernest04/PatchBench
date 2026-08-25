@@ -13,10 +13,11 @@
     },
     "constraints": {
       "type": "object",
-      "required": ["timeout_seconds", "memory_megabytes"],
+      "required": ["timeout_seconds", "memory_megabytes", "cpu_cores"],
       "properties": {
         "timeout_seconds": {"type": "integer", "minimum": 1},
-        "memory_megabytes": {"type": "integer", "minimum": 1}
+        "memory_megabytes": {"type": "integer", "minimum": 1},
+        "cpu_cores": {"type": "number", "exclusiveMinimum": 0}
       }
     },
     "checks": {"type": "array", "minItems": 1}

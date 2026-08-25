@@ -9,4 +9,5 @@ def test_loads_cache_invalidation_task():
     assert task.identifier == "cache-invalidation-v1"
     assert task.version == 1
     assert task.dockerfile == Path("fixtures/cache-invalidation/Dockerfile")
+    assert task.constraints.cpu_cores == 1.0
     assert [check.visibility for check in task.checks] == ["public", "hidden"]

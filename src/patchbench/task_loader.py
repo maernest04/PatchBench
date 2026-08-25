@@ -44,6 +44,7 @@ def load_task(task_directory: Path) -> Task:
     constraint_values = _require_object(raw, "constraints")
     timeout_seconds = _require_positive_int(constraint_values, "timeout_seconds")
     memory_megabytes = _require_positive_int(constraint_values, "memory_megabytes")
+    cpu_cores = _require_positive_number(constraint_values, "cpu_cores")
 
     raw_checks = raw.get("checks")
     if not isinstance(raw_checks, list) or not raw_checks:
@@ -60,7 +61,11 @@ def load_task(task_directory: Path) -> Task:
         repository=repository,
         image=image,
         dockerfile=dockerfile,
-        constraints=Constraints(timeout_seconds=timeout_seconds, memory_megabytes=memory_megabytes),
+        constraints=Constraints(
+            timeout_seconds=timeout_seconds,
+            memory_megabytes=memory_megabytes,
+            cpu_cores=cpu_cores,
+        ),
         checks=checks,
     )
 
@@ -100,3 +105,10 @@ def _require_positive_int(value: dict, field: str) -> int:
     if not isinstance(result, int) or result < 1:
         raise TaskValidationError(f"{field} must be a positive integer")
     return result
+
+
+def _require_positive_number(value: dict, field: str) -> float:
+    result = value.get(field)
+    if not isinstance(result, (int, float)) or isinstance(result, bool) or result <= 0:
+        raise TaskValidationError(f"{field} must be a positive number")
+    return float(result)

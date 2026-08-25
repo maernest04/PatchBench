@@ -7,6 +7,7 @@ runtime:
 constraints:
   timeout_seconds: 30
   memory_megabytes: 256
+  cpu_cores: 1
 checks:
   - name: visible-cache-behavior
     type: pytest
