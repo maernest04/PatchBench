@@ -1,0 +1,17 @@
+id: cache-invalidation-v1
+version: 1
+repository: repository
+runtime:
+  image: python:3.13-slim
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+checks:
+  - name: visible-cache-behavior
+    type: pytest
+    visibility: public
+    path: public/tests
+  - name: deleted-users-are-not-readable
+    type: pytest
+    visibility: hidden
+    path: hidden/tests

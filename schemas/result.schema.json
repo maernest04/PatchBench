@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["classification", "task", "patch", "checks"],
+  "properties": {
+    "classification": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "task": {"type": "object"},
+    "patch": {"type": "string"},
+    "checks": {"type": "array"}
+  }
+}

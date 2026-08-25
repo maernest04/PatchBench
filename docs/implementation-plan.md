@@ -14,14 +14,14 @@ Define precisely what PatchBench evaluates and what evidence is required for eve
 
 ### Checklist
 
-- [ ] Create `task.schema.json`, `run.schema.json`, and `result.schema.json`.
-- [ ] Define `PASS`, `FAIL`, and `INCONCLUSIVE` result rules.
-- [ ] Define a task contract containing public materials, hidden checks, constraints, and evaluator configuration.
-- [ ] Define stable CLI exit codes.
+- [x] Create `task.schema.json`, `run.schema.json`, and `result.schema.json`.
+- [x] Define `PASS`, `FAIL`, and `INCONCLUSIVE` result rules.
+- [x] Define a task contract containing public materials, hidden checks, constraints, and evaluator configuration.
+- [x] Define stable CLI exit codes.
 - [ ] Define the run-evidence record, including task version, patch digest, command observations, environment metadata, and seed.
-- [ ] Document the public-versus-hidden material boundary.
+- [x] Document the public-versus-hidden material boundary.
 - [ ] Record why V1 uses Python, pytest, and Docker in decision records.
-- [ ] Define how a candidate patch is supplied and validated.
+- [x] Define how a candidate patch is supplied and validated.
 
 ### Exit criterion
 
@@ -35,14 +35,14 @@ Prove that the benchmark design catches meaningful failures that visible tests a
 
 ### Checklist
 
-- [ ] Create a cache-invalidation fixture with a stateful hidden regression.
+- [x] Create a cache-invalidation fixture with a stateful hidden regression.
 - [ ] Create a CLI or library-behavior fixture.
-- [ ] Give every fixture a public task description and public tests.
-- [ ] Give every fixture hidden acceptance or preservation checks.
-- [ ] Create one independently verified correct candidate patch per fixture.
-- [ ] Create one realistic incorrect candidate patch per fixture.
-- [ ] Ensure at least one incorrect candidate passes the visible tests but fails hidden checks.
-- [ ] Ensure fixtures require no secrets, network access, or unmanaged external services.
+- [x] Give every fixture a public task description and public tests.
+- [x] Give every fixture hidden acceptance or preservation checks.
+- [x] Create one independently verified correct candidate patch per fixture.
+- [x] Create one realistic incorrect candidate patch per fixture.
+- [x] Ensure at least one incorrect candidate passes the visible tests but fails hidden checks.
+- [x] Ensure fixtures require no secrets, network access, or unmanaged external services.
 - [ ] Document each fixture's expected outcomes without exposing hidden details to an evaluated agent.
 
 ### Exit criterion
@@ -57,16 +57,16 @@ Evaluate one candidate patch against one task with a single CLI command.
 
 ### Checklist
 
-- [ ] Scaffold the `patchbench` Python package and CLI entry point.
-- [ ] Load and validate `task.yaml` against the task schema.
-- [ ] Create a temporary baseline workspace and candidate workspace.
-- [ ] Validate and apply a unified diff only inside the candidate workspace.
+- [x] Scaffold the `patchbench` Python package and CLI entry point.
+- [x] Load and validate `task.yaml` against the task schema.
+- [x] Create a temporary baseline workspace and candidate workspace.
+- [x] Validate and apply a unified diff only inside the candidate workspace.
 - [ ] Build and run the task's Docker execution environment with no network access by default.
 - [ ] Enforce CPU, memory, process, and wall-clock limits.
 - [ ] Run public checks and hidden checks independently.
-- [ ] Capture stdout, stderr, exit code, duration, and execution-failure reason.
-- [ ] Emit a human-readable report and a machine-readable JSON result.
-- [ ] Clean workspaces and containers after successful and failed runs.
+- [x] Capture stdout, stderr, exit code, duration, and execution-failure reason.
+- [x] Emit a human-readable report and a machine-readable JSON result.
+- [x] Clean temporary workspaces after successful and failed runs.
 
 ### Exit criterion
 

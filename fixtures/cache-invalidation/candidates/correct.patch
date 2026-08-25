@@ -1,0 +1,28 @@
+diff --git a/user_store.py b/user_store.py
+index 9f8567a..137d5db 100644
+--- a/user_store.py
++++ b/user_store.py
+@@ -1,14 +1,22 @@
+ class UserStore:
+     def __init__(self):
+         self._users = {}
++        self._cache = {}
+         self.database_reads = 0
+ 
+     def create_user(self, user_id, name):
+         self._users[user_id] = {"id": user_id, "name": name}
++        self._cache.pop(user_id, None)
+ 
+     def get_user(self, user_id):
++        if user_id in self._cache:
++            return self._cache[user_id]
+         self.database_reads += 1
+-        return self._users.get(user_id)
++        user = self._users.get(user_id)
++        if user is not None:
++            self._cache[user_id] = user
++        return user
+ 
+     def delete_user(self, user_id):
++        self._cache.pop(user_id, None)
+         return self._users.pop(user_id, None) is not None
