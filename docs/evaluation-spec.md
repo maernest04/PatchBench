@@ -19,6 +19,14 @@ Every benchmark task defines the executable evidence needed to judge it. A task 
 | Security task | Explicit security invariants and adversarial tests |
 | Performance task | Correctness checks plus benchmark thresholds |
 
+## Proposed contracts
+
+Change-contract generation may propose new checks from the task request, candidate patch, repository context, and deterministic risk inventory. A proposal is not an evaluator and cannot produce `PASS` or `FAIL`.
+
+Before a proposal can affect a result, PatchBench must validate its schema, retain its rationale and source evidence, and require explicit developer or trusted-rule approval. The resulting executable contract then runs through the same isolated evaluator and evidence path as every other task contract.
+
+An optional LLM can produce structured proposals, but it must not receive hidden tests, hidden expected outcomes, or prior hidden-check results. It is never the final authority for executable behavior. If the available contract cannot support a trustworthy conclusion, PatchBench reports `INCONCLUSIVE` rather than relying on a proposal's confidence.
+
 ## Dimensions
 
 ### Task correctness
@@ -58,4 +66,3 @@ Every `FAIL` must retain the task ID, candidate revision, failed check, expected
 ## Aggregate reporting
 
 Report task-success rate, hidden-failure rate, safety-violation rate, inconclusive rate, median and p95 runtime, and reproducibility rate separately.
-

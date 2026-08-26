@@ -69,6 +69,13 @@
 - Ran three local Codex attempts across each of the five current task fixtures, then replayed one result per task.
 - The versioned result reports 80% task success, 20% hidden failures, no inconclusives, and complete replay agreement.
 
+## 2026-08-26: Planned change-contract generation pivot
+
+- The existing evaluator is useful infrastructure but is not yet a distinctive developer workflow by itself: it executes contracts that someone already wrote.
+- The next planned capability is a change-contract generator. It will inspect a task request, candidate patch, and repository context to identify risk and propose executable regression, preservation, compatibility, and policy contracts.
+- Deterministic execution remains the sole authority for `PASS`, `FAIL`, and `INCONCLUSIVE`. Optional LLMs may propose bounded structured contracts, never judge code or receive hidden evaluator material.
+- The first release will require explicit approval before a proposal becomes an executable contract.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

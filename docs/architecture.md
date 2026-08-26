@@ -20,6 +20,31 @@ Benchmark task + agent configuration
        Evidence store and report generator
 ```
 
+## Planned change-contract generation extension
+
+The implemented evaluator begins with a trusted task contract. The planned extension adds an upstream proposal flow for ordinary development changes; it does not replace the evaluator or give a model authority over results.
+
+```text
+Task request + candidate patch + repository summary
+                         |
+                         v
+            Deterministic risk inventory
+                         |
+                         v
+      Rule-based and optional LLM contract proposer
+                         |
+                         v
+        Schema validation and explicit approval
+                         |
+                         v
+      Existing isolated task-specific evaluator
+                         |
+                         v
+          Evidence, result, and replay data
+```
+
+Only an approved, executable contract reaches the evaluator. A proposal is evidence for review, not evidence that the candidate is correct.
+
 ## Components
 
 ### Benchmark registry
@@ -48,6 +73,10 @@ Persists task metadata, candidate revision, checks, logs, seeds, observations, c
 
 Creates human-readable and machine-readable results while preserving separate dimensions instead of an opaque score.
 
+### Planned risk inventory and contract proposer
+
+The risk inventory derives auditable signals from changed files, symbols, call sites, state transitions, public interfaces, and policy-relevant operations. The proposer maps those signals to structured contract proposals. It may use deterministic templates alone or an optional LLM that returns a bounded schema; neither path may access hidden evaluator material or classify a candidate as passing.
+
 ## Isolation requirements
 
 - Network disabled by default.
@@ -55,4 +84,3 @@ Creates human-readable and machine-readable results while preserving separate di
 - CPU, memory, process, and wall-clock limits.
 - Temporary workspaces.
 - Captured stdout, stderr, exit status, and relevant resource metadata.
-

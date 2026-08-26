@@ -42,6 +42,8 @@ Contains the provider-independent evaluation engine.
 - `replay.py`: run reconstruction and replay.
 - `reporter.py`: human-readable and JSON reports.
 
+The planned contract-generation extension will add `contract_generation/` for deterministic risk analysis, template mapping, optional LLM proposals, schema validation, and explicit review state. It remains separate from `evaluators/` because proposals cannot classify candidates until they are approved and materialized as task contracts.
+
 Subdirectories are reserved for focused extension points:
 
 - `evaluators/`: pytest, command, differential, and future task-specific evaluators.
@@ -67,4 +69,3 @@ Tests PatchBench itself.
 ## `scripts/`
 
 Contains developer-only helpers that simplify local fixture execution or report generation. Scripts must not become a second production implementation path.
-

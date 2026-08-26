@@ -174,6 +174,52 @@ Produce a transparent report that compares candidate sources without overstating
 
 A versioned report compares at least two candidate sources across a small suite and documents its limits.
 
+## Phase 8: Change-contract generation
+
+### Goal
+
+Turn an AI-authored change into reviewable, executable evidence hypotheses instead of merely running checks that already existed. The initial release proposes contracts; it does not silently execute model-generated tests or let a model determine correctness.
+
+### Phase 8A: Deterministic risk inventory
+
+- [ ] Define a versioned generation context containing the task request, candidate patch, repository summary, existing public contracts, and evaluator configuration.
+- [ ] Extract changed paths, symbols, public exports, call sites, stateful operations, side effects, dependency/configuration changes, and weakened tests.
+- [ ] Emit auditable risk findings with category, confidence heuristic, and source evidence.
+- [ ] Map common findings to deterministic contract templates such as API compatibility, stateful differential behavior, CLI behavior, and policy checks.
+- [ ] Add fixtures where a visible-test-passing patch has an uncovered preservation or compatibility regression.
+
+### Phase 8B: Structured proposals
+
+- [ ] Define the versioned contract-proposal schema and validate every proposal before it is stored or displayed.
+- [ ] Build a template proposer that works without an API key.
+- [ ] Add optional LLM proposal support that accepts bounded context and returns schema-conforming data only.
+- [ ] Record proposer identity, model metadata when applicable, prompt/context digests, risk evidence, and validation failures without storing credentials or hidden materials.
+- [ ] Reject proposals that request unsupported execution, lack evidence, or cannot be expressed as an allowed contract type.
+
+### Phase 8C: Approval and execution
+
+- [ ] Add an explicit proposal review state: `proposed`, `approved`, or `rejected`.
+- [ ] Materialize only approved proposals as trusted task-contract changes.
+- [ ] Run approved contracts through the existing Docker isolation, classification, evidence, and replay paths.
+- [ ] Report contract coverage, approval rate, rejected-proposal reasons, and regressions caught after visible checks passed.
+- [ ] Verify that an LLM proposer cannot access hidden evaluator materials or affect classification directly.
+
+### Planned module layout
+
+```text
+src/patchbench/contract_generation/
+├── models.py
+├── analyzer.py
+├── templates.py
+├── proposer.py
+├── validator.py
+└── review.py
+```
+
+### Exit criterion
+
+For a curated fixture, PatchBench identifies an evidence-backed risk in a visible-test-passing candidate, proposes a relevant executable preservation, compatibility, or policy contract, and the approved contract reproducibly catches the regression. The result still comes from deterministic execution, not an LLM judgment.
+
 ## Deferred work
 
 - Web UI.
