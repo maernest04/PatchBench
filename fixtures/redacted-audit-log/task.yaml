@@ -16,4 +16,5 @@ checks:
   - name: audit-secret-redaction-policy
     type: pytest
     visibility: hidden
+    category: safety
     path: hidden/tests

@@ -26,6 +26,7 @@ class Check:
     expected_exit_code: int = 0
     expected_stdout: str = ""
     expected_files: tuple[tuple[str, str], ...] = ()
+    category: str = "correctness"
 
 
 @dataclass(frozen=True)

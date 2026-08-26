@@ -5,6 +5,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from patchbench.agents import AgentBudget, AgentConfigurationError, AgentExecutionError, CommandAgentAdapter
+from patchbench.benchmark import build_report
 from patchbench.models import AgentMetadata, Classification, EvaluationResult
 from patchbench.evaluator import evaluate
 from patchbench.replay import replay
@@ -38,6 +39,9 @@ def main() -> int:
     replay_parser.add_argument("run_id")
     replay_parser.add_argument("--format", choices=("text", "json"), default="text")
     replay_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
+    report_parser = subcommands.add_parser("report")
+    report_parser.add_argument("--format", choices=("text", "json"), default="text")
+    report_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
     arguments = parser.parse_args()
 
     run_store = FilesystemRunStore(arguments.artifacts_dir)
@@ -57,6 +61,11 @@ def main() -> int:
             parser.error(str(error))
         print(render_json(result) if arguments.format == "json" else render_text(result))
         return _exit_code(result.classification)
+
+    if arguments.command == "report":
+        report = build_report([stored_run.payload for stored_run in run_store.list_runs()])
+        print(json.dumps(report, sort_keys=True) if arguments.format == "json" else json.dumps(report, indent=2, sort_keys=True))
+        return 0
 
     try:
         task = load_task(arguments.task)

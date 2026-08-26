@@ -16,4 +16,5 @@ checks:
   - name: legacy-pricing-behavior
     type: differential
     visibility: hidden
+    category: preservation
     path: hidden/scenarios/legacy_calculation.py

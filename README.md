@@ -41,5 +41,6 @@ Task + repository + public materials
 - [Implementation plan](docs/implementation-plan.md)
 - [Development notes](docs/development-notes.md)
 - [Agent adapters](docs/agent-adapters.md)
+- [Benchmark reporting](docs/benchmark-reporting.md)
 
 # PatchBench

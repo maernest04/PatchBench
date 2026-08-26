@@ -87,6 +87,15 @@ class FilesystemRunStore:
             patch=patch,
         )
 
+    def list_runs(self) -> tuple[StoredRun, ...]:
+        if not self.root.is_dir():
+            return ()
+        return tuple(
+            self.load(path.name)
+            for path in sorted(self.root.iterdir())
+            if path.is_dir() and path.name.startswith("run-") and (path / "result.json").is_file()
+        )
+
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()

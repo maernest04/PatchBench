@@ -48,3 +48,14 @@ def test_replay_creates_a_linked_run(tmp_path):
     assert replayed.run_id != initial.run_id
     assert replayed.replay_of == initial.run_id
     assert replayed_record.payload["replay_of"] == initial.run_id
+
+
+def test_lists_saved_runs(tmp_path):
+    fixture = Path("fixtures/cache-invalidation")
+    run_store = FilesystemRunStore(tmp_path / "runs")
+    first = run_store.save(evaluate(load_task(fixture), fixture / "candidates" / "correct.patch", runner=PassingRunner()))
+    second = run_store.save(evaluate(load_task(fixture), fixture / "candidates" / "stale-cache.patch", runner=PassingRunner()))
+
+    runs = run_store.list_runs()
+
+    assert {run.run_id for run in runs} == {first.run_id, second.run_id}

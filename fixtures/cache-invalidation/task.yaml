@@ -20,4 +20,5 @@ checks:
   - name: deletion-preserves-read-behavior
     type: differential
     visibility: hidden
+    category: preservation
     path: hidden/scenarios/delete_then_read.py

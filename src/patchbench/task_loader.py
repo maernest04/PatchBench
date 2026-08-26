@@ -80,19 +80,22 @@ def _load_check(task_directory: Path, raw: object, index: int) -> Check:
         raise TaskValidationError(f"checks[{index}] has unsupported type: {kind}")
     if visibility not in {"public", "hidden"}:
         raise TaskValidationError(f"checks[{index}] has invalid visibility: {visibility}")
+    category = raw.get("category", "correctness")
+    if not isinstance(category, str) or category not in {"correctness", "preservation", "safety", "reliability", "efficiency"}:
+        raise TaskValidationError(f"checks[{index}] has invalid category: {category}")
     path = None
     if kind in {"pytest", "differential", "api"}:
         path = task_directory / _require_string(raw, "path")
         if not path.exists() or (kind == "pytest" and not path.is_dir()) or (kind in {"differential", "api"} and not path.is_file()):
             raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
     if kind in {"pytest", "differential"}:
-        return Check(name=name, kind=kind, visibility=visibility, path=path)
+        return Check(name=name, kind=kind, visibility=visibility, path=path, category=category)
     expected = _require_object(raw, "expected")
     if kind == "api":
         expected_stdout = expected.get("stdout")
         if not isinstance(expected_stdout, str):
             raise TaskValidationError(f"checks[{index}].expected.stdout must be a string")
-        return Check(name=name, kind=kind, visibility=visibility, path=path, expected_stdout=expected_stdout)
+        return Check(name=name, kind=kind, visibility=visibility, path=path, expected_stdout=expected_stdout, category=category)
     command = _require_command(raw, index)
     expected_exit_code = expected.get("exit_code", 0)
     if not isinstance(expected_exit_code, int) or isinstance(expected_exit_code, bool):
@@ -109,6 +112,7 @@ def _load_check(task_directory: Path, raw: object, index: int) -> Check:
         expected_exit_code=expected_exit_code,
         expected_stdout=expected_stdout,
         expected_files=expected_files,
+        category=category,
     )
 
 

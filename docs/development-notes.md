@@ -54,6 +54,11 @@
 - Agent runs persist only safe adapter metadata and declared budgets; command output and environment variables are not captured.
 - A configured real coding-agent command is still required to complete the end-to-end Phase 6 validation.
 
+## 2026-08-25: Benchmark reporting foundation
+
+- Added stored-run aggregation for task success, hidden failures, safety violations, inconclusives, runtime, and replay reproducibility.
+- Reports separate fixture and agent sources and state when no real-agent attempts or replay pairs are present.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

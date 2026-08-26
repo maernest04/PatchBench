@@ -44,6 +44,7 @@ def result_payload(result: EvaluationResult) -> dict:
             {
                 "name": check_result.check.name,
                 "visibility": check_result.check.visibility,
+                "category": check_result.check.category,
                 "returncode": check_result.command.returncode,
                 "duration_seconds": check_result.command.duration_seconds,
             }
