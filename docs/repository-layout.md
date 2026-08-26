@@ -42,7 +42,9 @@ Contains the provider-independent evaluation engine.
 - `replay.py`: run reconstruction and replay.
 - `reporter.py`: human-readable and JSON reports.
 
-The planned contract-generation extension will add `contract_generation/` for deterministic risk analysis, template mapping, optional LLM proposals, schema validation, and explicit review state. It remains separate from `evaluators/` because proposals cannot classify candidates until they are approved and materialized as task contracts.
+The deferred contract-generation extension may later add `contract_generation/` for deterministic risk analysis, template mapping, optional LLM proposals, schema validation, and explicit review state. It remains separate from `evaluators/` because proposals cannot classify candidates until they are approved and materialized as task contracts.
+
+The next planned benchmark modules are `reviewers.py` for fixed-budget reviewer attempts and `review_scoring.py` for deterministic finding and artifact scoring. They remain separate from the evaluator because the evaluator establishes candidate ground truth while the scorer measures the reviewer's performance against it.
 
 Subdirectories are reserved for focused extension points:
 

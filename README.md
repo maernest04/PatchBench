@@ -1,12 +1,12 @@
 # PatchBench
 
-PatchBench is an execution-based verification system for AI-authored code changes.
+PatchBench is a benchmark for measuring whether AI reviewers can detect AI-authored code regressions that pass visible tests.
 
-It measures whether an agent completes a software-engineering task according to an executable contract. Rather than trusting a visible test suite or asking an LLM to judge a patch, PatchBench runs the resulting code in a controlled environment and stores reproducible evidence.
+Rather than treating an LLM review as proof, PatchBench gives a reviewer agent a task, repository, public checks, and a plausible candidate patch. It then measures whether the reviewer identifies and exposes the patch's hidden behavioral regression through reproducible execution.
 
 ## Core question
 
-> Did the change complete the task correctly, preserve required behavior, and respect explicit constraints—and what executable contract would prove it?
+> Can an AI reviewer identify a behavioral regression that visible tests missed, and produce evidence that exposes it?
 
 ## Scope
 
@@ -32,9 +32,9 @@ Task + repository + public materials
  Evidence, result, and replay data
 ```
 
-## Planned direction: change-contract generation
+## Benchmark direction
 
-The existing evaluator executes trusted, task-specific contracts. The next product phase will make it useful during normal AI-assisted development: PatchBench will inspect a request, patch, and repository context; inventory the change's risks; and propose concrete regression, preservation, compatibility, or policy contracts for review. A developer or trusted rule set must approve a proposal before execution. An LLM may help propose a contract, but it never decides whether a change passes.
+The existing evaluator is the benchmark's execution engine. The next phase builds a curated corpus of plausible, visible-test-passing regressions and a controlled reviewer-agent experiment harness. PatchBench will compare visible tests, a text-only AI review, and an AI reviewer that produces executable verification evidence. It reports what reviewers catch, miss, and cannot evaluate—not an unsupported overall model ranking.
 
 ## Repository guide
 
@@ -42,11 +42,8 @@ The existing evaluator executes trusted, task-specific contracts. The next produ
 - [Evaluation specification](docs/evaluation-spec.md)
 - [Benchmark specification](docs/benchmark-spec.md)
 - [Architecture](docs/architecture.md)
-- [Contract-generation specification](docs/contract-generation-spec.md)
-- [Risk model](docs/risk-model.md)
 - [Implementation plan](docs/implementation-plan.md)
 - [Development notes](docs/development-notes.md)
 - [Agent adapters](docs/agent-adapters.md)
-- [Benchmark reporting](docs/benchmark-reporting.md)
 
 # PatchBench

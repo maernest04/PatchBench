@@ -2,48 +2,45 @@
 
 ## Overview
 
-PatchBench separates the generic evaluation engine from task-specific evaluators and optional coding-agent adapters.
+PatchBench separates its generic execution engine from benchmark tasks and optional reviewer-agent adapters.
 
 ```text
-Benchmark task + agent configuration
+Benchmark task + reviewer configuration
                 |
                 v
-       Agent adapter or fixture patch
+  Candidate patch + public task materials
                 |
                 v
-         Candidate workspace manager
+       Reviewer adapter and structured finding
                 |
                 v
-      Isolated task-specific evaluator
+  Isolated ground-truth and reviewer-check evaluation
                 |
                 v
        Evidence store and report generator
 ```
 
-## Planned change-contract generation extension
+## Planned reviewer benchmark extension
 
-The implemented evaluator begins with a trusted task contract. The planned extension adds an upstream proposal flow for ordinary development changes; it does not replace the evaluator or give a model authority over results.
+The implemented evaluator establishes whether a candidate patch is actually incorrect. The planned extension measures whether a reviewer agent can discover that issue without access to hidden materials.
 
 ```text
-Task request + candidate patch + repository summary
-                         |
-                         v
-            Deterministic risk inventory
-                         |
-                         v
-      Rule-based and optional LLM contract proposer
-                         |
-                         v
-        Schema validation and explicit approval
-                         |
-                         v
-      Existing isolated task-specific evaluator
-                         |
-                         v
-          Evidence, result, and replay data
+Public task + repository + candidate patch
+                    |
+                    v
+       Fixed-budget reviewer-agent attempt
+                    |
+                    v
+Structured finding and optional verification artifact
+                    |
+                    v
+  Deterministic scorer + hidden ground-truth evaluator
+                    |
+                    v
+   Per-task outcome, evidence, and aggregate report
 ```
 
-Only an approved, executable contract reaches the evaluator. A proposal is evidence for review, not evidence that the candidate is correct.
+The hidden evaluator decides candidate ground truth. The scorer decides whether the reviewer's evidence actually identified or exposed that known regression. The reviewer never receives hidden tests, reference patches, or prior hidden results.
 
 ## Components
 
@@ -51,9 +48,9 @@ Only an approved, executable contract reaches the evaluator. A proposal is evide
 
 Loads versioned tasks and preserves the boundary between public agent materials and hidden evaluator materials.
 
-### Agent adapter
+### Reviewer adapter
 
-Optionally runs a coding agent under a fixed task, budget, and workspace. The core evaluator does not require an adapter; fixture patches are valid candidates.
+Optionally runs a reviewer agent under a fixed prompt, budget, and public workspace. The adapter returns structured findings and, where permitted, a verification artifact. Fixture findings remain valid baseline inputs for scorer tests.
 
 Future adapters may use provider credentials supplied through environment variables. Credentials must never be committed, logged, or stored in results.
 
@@ -73,9 +70,9 @@ Persists task metadata, candidate revision, checks, logs, seeds, observations, c
 
 Creates human-readable and machine-readable results while preserving separate dimensions instead of an opaque score.
 
-### Planned risk inventory and contract proposer
+### Planned reviewer scorer
 
-The risk inventory derives auditable signals from changed files, symbols, call sites, state transitions, public interfaces, and policy-relevant operations. The proposer maps those signals to structured contract proposals. It may use deterministic templates alone or an optional LLM that returns a bounded schema; neither path may access hidden evaluator material or classify a candidate as passing.
+The scorer matches a reviewer finding against task-authored ground-truth labels and validates any reviewer-produced verification artifact by execution. Text alone can establish a declared detection; only a distinguishing executable artifact establishes executable detection. Neither score changes the candidate's hidden ground truth.
 
 ## Isolation requirements
 

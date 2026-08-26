@@ -6,30 +6,30 @@ AI coding agents can produce changes that compile and pass visible tests while f
 
 ## Product statement
 
-PatchBench is an execution-based verification system that evaluates whether AI-authored changes complete software-engineering tasks according to task-specific, executable contracts. Its planned change-contract generator will turn a request, patch, and repository context into reviewable proposals for the evidence a change should satisfy.
+PatchBench is an execution-based benchmark that measures whether AI reviewers can detect and expose behavioral regressions in plausible AI-authored patches that pass visible tests. Its task-specific executable contracts establish ground truth; they do not serve as an LLM judge.
 
 ## Users
 
-- Engineers validating an agent-produced change.
-- Researchers comparing coding agents.
-- Platform teams establishing repeatable quality gates for coding agents.
+- Engineers and researchers evaluating AI code-review workflows.
+- Teams deciding whether an AI reviewer provides evidence beyond a visible test suite.
+- Developers studying the failure modes of AI-authored code changes.
 
 ## Inputs
 
 - A versioned benchmark task.
 - A repository and initial state.
 - Public task materials and tests available to the agent.
-- A candidate change created by an agent or fixture.
+- A plausible incorrect candidate patch that passes its public checks.
+- A correct reference patch or independently verified expected behavior.
 - Hidden evaluators and constraints available only to PatchBench.
-- For contract generation, a repository summary and deterministic risk inventory derived from the requested change and candidate patch.
+- A reviewer-agent configuration, fixed prompt, and declared attempt budget.
 
 ## Outputs
 
-- `PASS`, `FAIL`, or `INCONCLUSIVE`.
-- Evidence for each result.
-- Task-success, preservation, safety, reliability, and efficiency observations.
-- Reproduction metadata for relevant failures.
-- When enabled, reviewable proposed contracts with their evidence, risk category, and approval status.
+- Candidate ground truth from the hidden executable contract.
+- Structured reviewer findings and optional executable verification artifacts.
+- Detection, executable-detection, false-positive, inconclusive, cost, and replay observations.
+- Reproduction metadata and limitations for every experiment.
 
 ## Non-goals for the first release
 
@@ -38,4 +38,4 @@ PatchBench is an execution-based verification system that evaluates whether AI-a
 - Reducing an agent to one opaque quality score.
 - Requiring an LLM provider or API key for the core evaluator.
 - Allowing an LLM to declare a change correct without executed evidence.
-- Automatically installing or executing an unreviewed generated contract in the first contract-generation release.
+- Claiming a general model ranking from a small or homogeneous corpus.

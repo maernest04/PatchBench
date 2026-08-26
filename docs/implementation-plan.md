@@ -174,56 +174,86 @@ Produce a transparent report that compares candidate sources without overstating
 
 A versioned report compares at least two candidate sources across a small suite and documents its limits.
 
-## Phase 8: Change-contract generation
+## Phase 8: Reviewer-regression corpus
 
 ### Goal
 
-Turn an AI-authored change into reviewable, executable evidence hypotheses instead of merely running checks that already existed. The initial release proposes contracts; it does not silently execute model-generated tests or let a model determine correctness.
+Create a curated corpus of plausible incorrect patches that pass visible tests but fail one clear hidden behavioral contract. The corpus is the benchmark's central artifact; the existing evaluator establishes each task's ground truth.
 
-### Phase 8A: Deterministic risk inventory
+### Phase 8A: Corpus contract and pilot
 
-- [ ] Define a versioned generation context containing the task request, candidate patch, repository summary, existing public contracts, and evaluator configuration.
-- [ ] Extract changed paths, symbols, public exports, call sites, stateful operations, side effects, dependency/configuration changes, and weakened tests.
-- [ ] Emit auditable risk findings with category, confidence heuristic, and source evidence.
-- [ ] Map common findings to deterministic contract templates such as API compatibility, stateful differential behavior, CLI behavior, and policy checks.
-- [ ] Add fixtures where a visible-test-passing patch has an uncovered preservation or compatibility regression.
+- [ ] Define the versioned reviewer-task schema, ground-truth fault labels, candidate provenance, and public-versus-hidden layout.
+- [ ] Define task authoring rules: one primary hidden regression, one correct reference, one plausible incorrect candidate, and public-test-pass proof.
+- [ ] Build a six-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
+- [ ] Record per-task author rationale, candidate plausibility review, deterministic environment, and hidden-evaluator evidence without leaking the fault to reviewer agents.
+- [ ] Validate each pilot task against its incorrect candidate, correct reference, and at least one irrelevant reviewer finding.
 
-### Phase 8B: Structured proposals
+### Phase 8B: Corpus expansion and quality
 
-- [ ] Define the versioned contract-proposal schema and validate every proposal before it is stored or displayed.
-- [ ] Build a template proposer that works without an API key.
-- [ ] Add optional LLM proposal support that accepts bounded context and returns schema-conforming data only.
-- [ ] Record proposer identity, model metadata when applicable, prompt/context digests, risk evidence, and validation failures without storing credentials or hidden materials.
-- [ ] Reject proposals that request unsupported execution, lack evidence, or cannot be expressed as an allowed contract type.
+- [ ] Expand to 15–25 tasks with at least three tasks per major category.
+- [ ] Include both human-authored and observed AI-style failure patterns; label provenance accurately.
+- [ ] Add task-level difficulty and confound review to avoid trivial test-name, diff-size, or naming leaks.
+- [ ] Add a correct-reference and incorrect-candidate replay check to the corpus release process.
+- [ ] Version and freeze the first corpus release before running comparison experiments.
 
-### Phase 8C: Approval and execution
+### Exit criterion
 
-- [ ] Add an explicit proposal review state: `proposed`, `approved`, or `rejected`.
-- [ ] Materialize only approved proposals as trusted task-contract changes.
-- [ ] Run approved contracts through the existing Docker isolation, classification, evidence, and replay paths.
-- [ ] Report contract coverage, approval rate, rejected-proposal reasons, and regressions caught after visible checks passed.
-- [ ] Verify that an LLM proposer cannot access hidden evaluator materials or affect classification directly.
+At least six pilot tasks each prove that the incorrect candidate passes public checks, fails a hidden contract, and can be replayed; no public material reveals the task's fault label.
+
+## Phase 9: Reviewer-agent evaluation harness
+
+### Goal
+
+Measure whether an AI reviewer identifies the corpus's known regression without receiving hidden information.
+
+### Checklist
+
+- [ ] Define a structured reviewer-finding schema containing claimed category, affected paths or symbols, rationale, confidence, and optional verification artifact.
+- [ ] Define a provider-neutral reviewer adapter with fixed time, tool, token, cost, and retry budgets.
+- [ ] Build a public-only reviewer workspace containing the repository, task, public tests, and incorrect candidate patch.
+- [ ] Implement deterministic scoring against pre-authored ground-truth fault labels.
+- [ ] Validate executable artifacts by running them against the incorrect candidate and correct reference or baseline as appropriate.
+- [ ] Classify detection, executable detection, miss, false positive, and inconclusive independently.
+- [ ] Preserve prompt version, safe adapter metadata, artifacts, scorer output, and replay data.
 
 ### Planned module layout
 
 ```text
-src/patchbench/contract_generation/
-├── models.py
-├── analyzer.py
-├── templates.py
-├── proposer.py
-├── validator.py
-└── review.py
+src/patchbench/
+├── reviewer_models.py
+├── reviewers.py
+├── review_scoring.py
+└── review_reporting.py
 ```
 
 ### Exit criterion
 
-For a curated fixture, PatchBench identifies an evidence-backed risk in a visible-test-passing candidate, proposes a relevant executable preservation, compatibility, or policy contract, and the approved contract reproducibly catches the regression. The result still comes from deterministic execution, not an LLM judgment.
+One reviewer adapter completes the six-task pilot without hidden-material access, and scorer tests cover correct detection, wrong detection, executable detection, false positive, and infrastructure inconclusive outcomes.
+
+## Phase 10: Controlled comparison and report
+
+### Goal
+
+Produce transparent evidence of what reviewer workflows add beyond public tests and text-only review.
+
+### Checklist
+
+- [ ] Freeze a fixed reviewer prompt, model configuration, tools, budgets, and attempt count before each experiment.
+- [ ] Run a public-test baseline, text-only reviewer baseline, and executable-evidence reviewer workflow over the frozen corpus.
+- [ ] Run at least three independent attempts per task and workflow where cost permits.
+- [ ] Report detection, executable-detection, false-positive, inconclusive, runtime, cost, and replay metrics by category and task.
+- [ ] Publish per-task evidence and explicit threats to validity without publishing active hidden checks.
+- [ ] State that results apply only to the named corpus, reviewer configurations, and experiment date.
+
+### Exit criterion
+
+A versioned report compares the three workflows on the frozen corpus, includes raw per-task outcomes and replay evidence, and makes no unsupported general ranking claim.
 
 ## Deferred work
 
 - Web UI.
 - Hosted or multi-tenant execution.
 - Arbitrary-language support.
+- Automated change-contract generation.
 - Autonomous patch repair.
 - Broad model rankings from insufficient task samples.

@@ -76,6 +76,12 @@
 - Deterministic execution remains the sole authority for `PASS`, `FAIL`, and `INCONCLUSIVE`. Optional LLMs may propose bounded structured contracts, never judge code or receive hidden evaluator material.
 - The first release will require explicit approval before a proposal becomes an executable contract.
 
+## 2026-08-26: Planned reviewer-benchmark focus
+
+- PatchBench will be positioned as a benchmark for AI reviewers, not a generic code-checking tool.
+- The next work is a curated corpus of plausible incorrect patches that pass visible tests, followed by controlled reviewer-agent experiments and a transparent comparative report.
+- Contract generation remains a possible future capability, but it is not the next flagship milestone.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

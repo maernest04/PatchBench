@@ -1,5 +1,11 @@
 # Agent Adapters
 
+## Planned reviewer-agent benchmark adapter
+
+The existing adapters generate candidate patches. The next benchmark phase adds a separate reviewer adapter: it receives the public task materials, candidate patch, fixed prompt, and declared budget, then returns a structured finding and optional verification artifact. It cannot access hidden checks, reference patches, benchmark labels, or prior results.
+
+The reviewer adapter is intentionally distinct from a coding-agent adapter. PatchBench is measuring review behavior against a known faulty candidate, not asking the reviewer to implement the task.
+
 PatchBench accepts agent-generated patches through a provider-neutral `AgentAdapter` contract. The initial `CommandAgentAdapter` uses `PATCHBENCH_AGENT_COMMAND` to invoke a locally configured coding-agent command.
 
 ## Agent-visible inputs

@@ -1,48 +1,53 @@
 # Benchmark Specification
 
-## Goal
+## Question
 
-The benchmark measures whether AI coding agents complete software tasks using executable evidence instead of visible-test success alone.
+Can an AI reviewer detect and expose a behavioral regression in a plausible candidate patch when the task's visible tests pass?
 
-## Task composition
+## Task design
 
-Each task includes:
+Each versioned task contains a small reproducible repository, public task request and tests, a plausible incorrect candidate patch, a correct reference or verified baseline, and a hidden executable contract.
 
-- A small repository and reproducible initial state.
-- A task description and public materials available to the agent.
-- Public tests or observable checks when appropriate.
-- Hidden acceptance checks and constraints.
-- A documented evaluation environment and resource limits.
-- An independently verified expected outcome.
+The incorrect candidate must pass all public checks and fail the hidden contract. The correct reference or baseline must pass the hidden contract. Each task has one primary regression, private ground-truth fault labels, candidate provenance, and no dependency on secrets, external network access, or unmanaged services.
 
-## Initial fixture strategy
+The first corpus will contain 15–25 Python tasks across state/lifecycle behavior, public API compatibility, CLI/filesystem behavior, security/policy, refactor preservation, and reliability/error paths. The pilot contains one task from each category.
 
-The first fixtures use Python and pytest because they make the core evaluator easy to validate. They are examples, not a product boundary.
+## Reviewer inputs and outputs
 
-Initial categories may include:
+A reviewer receives only the repository, task request, public tests, candidate patch, fixed prompt, and declared tool/budget policy. It never receives hidden checks, expected outcomes, reference patches, private fault labels, or prior results.
 
-- Backend state and lifecycle behavior.
-- CLI and library behavior.
-- API compatibility and error semantics.
-- Security and authorization constraints.
-- Refactors that must preserve behavior.
+The reviewer returns a structured finding: claimed category, affected path or symbol, rationale, confidence, and an optional executable verification artifact. A reviewer may explicitly state that it cannot reach a conclusion.
 
-## Task quality requirements
+## Scoring
 
-- One primary task objective.
-- Clear expected behavior or explicit constraints.
-- At least one evaluator beyond visible tests where practical.
-- A correct reference solution or independently verified expected result.
-- A deliberately incorrect candidate for testing the evaluator when feasible.
-- No secrets, external network dependency, or unmanaged nondeterminism.
+PatchBench establishes candidate ground truth with the hidden contract before scoring any review.
 
-## Leakage rules
+- `detected`: the finding matches the task-authored fault category and affected behavior evidence.
+- `executable_detected`: a detection plus an artifact that fails on the incorrect candidate and passes on the correct reference or baseline.
+- `missed`: no finding identifies the known regression.
+- `false_positive`: the reviewer asserts a defect without task-ground-truth or executable support.
+- `inconclusive`: the reviewer, scorer, or execution environment cannot support a trustworthy result.
 
-- Agents access only public materials.
-- Hidden tests, hidden expected outcomes, and reference solutions remain isolated from agent execution.
-- Benchmark documentation must not reveal task-specific hidden conditions.
+The scorer uses pre-authored labels and executed artifacts, never an LLM judge. A review score never changes the candidate's ground truth.
 
-## Versioning
+## Comparison protocol
 
-Tasks and evaluators are immutable once released. A change creates a new benchmark version so results remain comparable over time.
+Each frozen corpus is evaluated with three workflows:
 
+| Workflow | Purpose |
+|---|---|
+| Public-test baseline | Proves the candidate appears valid to visible checks. |
+| Text-only review | Measures whether a reviewer can identify the defect from public materials and the patch. |
+| Executable-evidence review | Measures whether a reviewer can provide a check that exposes the defect. |
+
+For a run, freeze corpus version, task list, prompt, model configuration, enabled tools, time/token/cost/retry budgets, attempt count, evaluator version, scorer version, and report version. Run at least three independent attempts per task and workflow where budget permits. Do not combine different configurations without labeling them as separate experiments.
+
+## Reporting
+
+Report detection, executable-detection, miss, false-positive, inconclusive, runtime, cost when available, and replay agreement overall and by category. Preserve raw per-task outcomes and show every aggregate's numerator and denominator.
+
+Each report records the corpus, prompt, reviewer configuration, tool policy, budgets, environment, evaluator, scorer, and known threats to validity. Results apply only to the named corpus and configuration; PatchBench does not claim a broad model ranking from a small curated set.
+
+## Release and leakage
+
+Task versions and evaluators are immutable once released. Public materials, candidate patches, category metadata, and evaluator versions may be published. Active hidden checks, reference patches, exact accepted labels, and expected outcomes stay sealed until a benchmark version is retired or separately disclosed.

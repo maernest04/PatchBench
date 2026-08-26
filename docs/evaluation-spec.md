@@ -19,13 +19,13 @@ Every benchmark task defines the executable evidence needed to judge it. A task 
 | Security task | Explicit security invariants and adversarial tests |
 | Performance task | Correctness checks plus benchmark thresholds |
 
-## Proposed contracts
+## Reviewer evaluation
 
-Change-contract generation may propose new checks from the task request, candidate patch, repository context, and deterministic risk inventory. A proposal is not an evaluator and cannot produce `PASS` or `FAIL`.
+For reviewer-benchmark tasks, PatchBench first evaluates the candidate against the hidden task contract to establish ground truth. It then evaluates whether a reviewer agent, given only public materials and the candidate patch, detected the task-authored hidden regression.
 
-Before a proposal can affect a result, PatchBench must validate its schema, retain its rationale and source evidence, and require explicit developer or trusted-rule approval. The resulting executable contract then runs through the same isolated evaluator and evidence path as every other task contract.
+The reviewer returns a structured finding with a claimed category, affected paths or symbols, rationale, and optional verification artifact. A task earns detection only when the finding matches its pre-authored ground-truth fault label. It earns executable detection only when the artifact fails on the incorrect candidate and passes on the independently verified correct reference or baseline as appropriate.
 
-An optional LLM can produce structured proposals, but it must not receive hidden tests, hidden expected outcomes, or prior hidden-check results. It is never the final authority for executable behavior. If the available contract cannot support a trustworthy conclusion, PatchBench reports `INCONCLUSIVE` rather than relying on a proposal's confidence.
+Reviewers must not receive hidden tests, hidden expected outcomes, reference patches, or prior hidden-check results. Reviewer confidence never establishes ground truth. If either the evaluator or scorer cannot support a trustworthy conclusion, that dimension is `INCONCLUSIVE`.
 
 ## Dimensions
 
