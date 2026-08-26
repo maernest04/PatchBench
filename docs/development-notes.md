@@ -54,6 +54,11 @@
 - Agent runs persist only safe adapter metadata and declared budgets; command output and environment variables are not captured.
 - A configured real coding-agent command is still required to complete the end-to-end Phase 6 validation.
 
+## 2026-08-25: Real Codex agent validation
+
+- Added a Codex CLI bridge that runs an authenticated local Codex attempt inside the temporary public agent workspace and derives a unified patch from its changes.
+- Verified one real Codex attempt on `cache-invalidation-v1`; the generated patch passed public, hidden, and differential checks through the normal evaluator path.
+
 ## 2026-08-25: Benchmark reporting foundation
 
 - Added stored-run aggregation for task success, hidden failures, safety violations, inconclusives, runtime, and replay reproducibility.

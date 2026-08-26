@@ -32,3 +32,11 @@ PATCHBENCH_AGENT_COMMAND="your-agent-command" patchbench agent-evaluate --task f
 ```
 
 `agent-evaluate` gives the attempt a fixed wall-clock timeout and passes the remaining declared budgets to the adapter command. PatchBench does not capture the command's stdout, stderr, environment variables, or credentials. It stores only the generated patch and safe attempt metadata before evaluating the patch through the normal evaluator.
+
+## Codex CLI bridge
+
+The repository includes `scripts/patchbench_codex_agent.py`, which invokes an installed, logged-in Codex CLI inside the temporary agent workspace and creates a unified diff from its changes.
+
+```text
+PATCHBENCH_AGENT_COMMAND="python3 scripts/patchbench_codex_agent.py" patchbench agent-evaluate --task fixtures/cache-invalidation
+```

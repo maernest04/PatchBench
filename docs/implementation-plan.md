@@ -149,7 +149,7 @@ Evaluate real coding agents only after the evaluator and benchmark fixtures are 
 - [x] Add one adapter configured by environment variables.
 - [x] Keep credentials out of source control, logs, reports, and persisted evidence.
 - [x] Capture the final candidate patch and safe execution metadata.
-- [ ] Evaluate fixture and agent-generated patches through exactly the same evaluator path.
+- [x] Evaluate fixture and agent-generated patches through exactly the same evaluator path.
 - [x] Report task result separately from time, cost, and number of attempts.
 
 ### Exit criterion
