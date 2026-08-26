@@ -12,6 +12,7 @@ from patchbench.replay import replay
 from patchbench.reporter import render_json, render_stored_text, render_text
 from patchbench.storage import FilesystemRunStore, RunNotFoundError
 from patchbench.task_loader import TaskValidationError, load_task
+from patchbench.working_tree import WorkingTreeError, write_working_tree_patch
 
 
 def main() -> int:
@@ -22,6 +23,10 @@ def main() -> int:
     evaluate_parser.add_argument("--patch", required=True, type=Path)
     evaluate_parser.add_argument("--format", choices=("text", "json"), default="text")
     evaluate_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
+    working_tree_parser = subcommands.add_parser("verify-working-tree")
+    working_tree_parser.add_argument("--task", required=True, type=Path)
+    working_tree_parser.add_argument("--format", choices=("text", "json"), default="text")
+    working_tree_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
     agent_parser = subcommands.add_parser("agent-evaluate")
     agent_parser.add_argument("--task", required=True, type=Path)
     agent_parser.add_argument("--format", choices=("text", "json"), default="text")
@@ -72,7 +77,23 @@ def main() -> int:
     except TaskValidationError as error:
         parser.error(str(error))
 
-    if arguments.command == "agent-evaluate":
+    if arguments.command == "verify-working-tree":
+        with tempfile.TemporaryDirectory(prefix="patchbench-working-tree-") as temporary_directory:
+            patch = Path(temporary_directory) / "candidate.patch"
+            try:
+                write_working_tree_patch(task.repository, patch)
+            except WorkingTreeError as error:
+                result = EvaluationResult(
+                    classification=Classification.INCONCLUSIVE,
+                    task=task,
+                    patch=patch,
+                    checks=(),
+                    reason=str(error),
+                )
+            else:
+                result = evaluate(task, patch)
+            result = run_store.save(result)
+    elif arguments.command == "agent-evaluate":
         budget = AgentBudget(
             timeout_seconds=arguments.timeout_seconds,
             max_attempts=arguments.max_attempts,

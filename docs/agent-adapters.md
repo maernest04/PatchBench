@@ -40,3 +40,13 @@ The repository includes `scripts/patchbench_codex_agent.py`, which invokes an in
 ```text
 PATCHBENCH_AGENT_COMMAND="python3 scripts/patchbench_codex_agent.py" patchbench agent-evaluate --task fixtures/cache-invalidation
 ```
+
+## Local editor workflow
+
+After an AI coding editor changes a task repository, run:
+
+```text
+patchbench verify-working-tree --task <task-directory>
+```
+
+PatchBench turns the current Git working-tree diff into the same candidate-patch evaluation used for agent adapters.

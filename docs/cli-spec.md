@@ -10,6 +10,14 @@ patchbench evaluate --task <task-directory> --patch <candidate.patch>
 
 The command validates the task and patch, creates isolated workspaces, runs every enabled check, writes a run record, and prints a concise result.
 
+## `patchbench verify-working-tree`
+
+```text
+patchbench verify-working-tree --task <task-directory>
+```
+
+The command collects tracked and untracked changes from the task repository's Git working tree, evaluates the resulting unified patch through the normal evaluator, and stores the result. A clean working tree is `INCONCLUSIVE`, because there is no candidate change to verify.
+
 ### Inspect a stored run
 
 ```text
@@ -40,4 +48,3 @@ Every command supports a readable terminal summary. `evaluate` and `show` must a
 ## Non-goals
 
 V1 does not include an interactive shell, web dashboard, agent-management commands, or remote execution commands.
-
