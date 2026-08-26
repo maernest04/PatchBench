@@ -1,0 +1,19 @@
+id: redacted-audit-log-v1
+version: 1
+repository: repository
+runtime:
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+  cpu_cores: 1
+checks:
+  - name: visible-audit-event-format
+    type: pytest
+    visibility: public
+    path: public/tests
+  - name: audit-secret-redaction-policy
+    type: pytest
+    visibility: hidden
+    path: hidden/tests

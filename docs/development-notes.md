@@ -41,6 +41,19 @@
 - Added a CLI evaluator that verifies a command's exit code, exact stdout, and declared output files in an isolated temporary directory.
 - Added the CLI report-generation fixture, where a superficial candidate passes the public slug-output contract but fails the hidden JSON file contract.
 
+## 2026-08-25: Expanded task contracts
+
+- Added an API compatibility evaluator that compares a scenario's normalized JSON observation with its declared output contract.
+- Added API compatibility, refactor-preservation, and secret-redaction-policy fixtures with correct and intentionally incorrect candidates.
+- Documented evidence requirements for future frontend, mobile, performance, and infrastructure evaluators.
+
+## 2026-08-25: Agent adapter foundation
+
+- Added a provider-neutral adapter contract and an environment-configured command adapter.
+- The adapter copies only repository and public materials into a temporary agent workspace, then returns one candidate patch for normal evaluation.
+- Agent runs persist only safe adapter metadata and declared budgets; command output and environment variables are not captured.
+- A configured real coding-agent command is still required to complete the end-to-end Phase 6 validation.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

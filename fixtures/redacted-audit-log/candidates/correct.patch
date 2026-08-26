@@ -1,0 +1,8 @@
+diff --git a/audit.py b/audit.py
+index 302008e..c77e6b0 100644
+--- a/audit.py
++++ b/audit.py
+@@ -1,2 +1,2 @@
+ def format_login_event(user, api_key):
+-    return f"login user={user}"
++    return f"login user={user} api_key=[REDACTED]"

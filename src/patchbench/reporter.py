@@ -9,6 +9,9 @@ def render_text(result: EvaluationResult) -> str:
         lines.append(f"Run: {result.run_id}")
     if result.replay_of:
         lines.append(f"Replay of: {result.replay_of}")
+    if result.agent:
+        lines.append(f"Agent: {result.agent.adapter}")
+        lines.append(f"Agent duration: {result.agent.duration_seconds}")
     for check_result in result.checks:
         status = "PASS" if check_result.command.returncode == 0 else "FAIL"
         lines.append(f"{status} {check_result.check.visibility} check: {check_result.check.name}")
@@ -36,6 +39,7 @@ def result_payload(result: EvaluationResult) -> dict:
         "task": {"id": result.task.identifier, "version": result.task.version},
         "patch": str(result.patch),
         "reason": result.reason,
+        "agent": _agent_payload(result.agent),
         "checks": [
             {
                 "name": check_result.check.name,
@@ -45,6 +49,22 @@ def result_payload(result: EvaluationResult) -> dict:
             }
             for check_result in result.checks
         ],
+    }
+
+
+def _agent_payload(agent):
+    if agent is None:
+        return None
+    return {
+        "adapter": agent.adapter,
+        "duration_seconds": agent.duration_seconds,
+        "attempts": agent.attempts,
+        "budget": {
+            "max_attempts": agent.max_attempts,
+            "max_tool_calls": agent.max_tool_calls,
+            "max_tokens": agent.max_tokens,
+            "max_cost_usd": agent.max_cost_usd,
+        },
     }
 
 

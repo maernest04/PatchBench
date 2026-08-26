@@ -63,6 +63,11 @@ checks:
       stdout: "grace-hopper\n"
       files:
         report.json: "{\"name\": \"Grace Hopper\", \"slug\": \"grace-hopper\"}\n"
+  - type: api
+    visibility: hidden
+    path: hidden/scenarios/lookup_compatibility.py
+    expected:
+      stdout: '[{"email":"missing@example.com","result":null}]'
 ```
 
 The exact schema is finalized in Phase 0. `runtime.image` identifies the container image used for checks. When `runtime.dockerfile` is present, PatchBench builds that image from the task directory before executing checks.
@@ -75,6 +80,7 @@ The exact schema is finalized in Phase 0. `runtime.image` identifies the contain
 - Checks define observable evidence, not an LLM-derived quality score.
 - A differential check runs a scenario against baseline and candidate workspaces and compares their normalized output.
 - A CLI check runs its command in the candidate workspace and verifies exact exit code, stdout, and files written beneath `/tmp/patchbench-output`.
+- An API check runs a compatibility scenario in the candidate workspace and compares its normalized JSON observation with the declared contract output.
 - A task must define enough conditions to classify a result honestly.
 - An ambiguous task must return `INCONCLUSIVE` rather than create a misleading failure.
 

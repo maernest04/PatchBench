@@ -76,19 +76,24 @@ def _load_check(task_directory: Path, raw: object, index: int) -> Check:
     name = _require_string(raw, "name")
     kind = _require_string(raw, "type")
     visibility = _require_string(raw, "visibility")
-    if kind not in {"pytest", "differential", "cli"}:
+    if kind not in {"pytest", "differential", "cli", "api"}:
         raise TaskValidationError(f"checks[{index}] has unsupported type: {kind}")
     if visibility not in {"public", "hidden"}:
         raise TaskValidationError(f"checks[{index}] has invalid visibility: {visibility}")
     path = None
-    if kind in {"pytest", "differential"}:
+    if kind in {"pytest", "differential", "api"}:
         path = task_directory / _require_string(raw, "path")
-        if not path.exists() or (kind == "pytest" and not path.is_dir()) or (kind == "differential" and not path.is_file()):
+        if not path.exists() or (kind == "pytest" and not path.is_dir()) or (kind in {"differential", "api"} and not path.is_file()):
             raise TaskValidationError(f"checks[{index}] path does not exist: {path}")
-    if kind != "cli":
+    if kind in {"pytest", "differential"}:
         return Check(name=name, kind=kind, visibility=visibility, path=path)
-    command = _require_command(raw, index)
     expected = _require_object(raw, "expected")
+    if kind == "api":
+        expected_stdout = expected.get("stdout")
+        if not isinstance(expected_stdout, str):
+            raise TaskValidationError(f"checks[{index}].expected.stdout must be a string")
+        return Check(name=name, kind=kind, visibility=visibility, path=path, expected_stdout=expected_stdout)
+    command = _require_command(raw, index)
     expected_exit_code = expected.get("exit_code", 0)
     if not isinstance(expected_exit_code, int) or isinstance(expected_exit_code, bool):
         raise TaskValidationError(f"checks[{index}].expected.exit_code must be an integer")

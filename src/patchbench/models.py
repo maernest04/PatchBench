@@ -55,6 +55,17 @@ class CheckResult:
 
 
 @dataclass(frozen=True)
+class AgentMetadata:
+    adapter: str
+    duration_seconds: float | None
+    attempts: int | None
+    max_attempts: int
+    max_tool_calls: int
+    max_tokens: int
+    max_cost_usd: float
+
+
+@dataclass(frozen=True)
 class EvaluationResult:
     classification: Classification
     task: Task
@@ -63,3 +74,4 @@ class EvaluationResult:
     reason: str | None = None
     run_id: str | None = None
     replay_of: str | None = None
+    agent: AgentMetadata | None = None

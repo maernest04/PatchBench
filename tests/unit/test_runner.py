@@ -103,3 +103,36 @@ def test_runs_cli_check_with_declared_expectations(monkeypatch):
         "files": {"report.json": "{}\n"},
         "stdout": "report\n",
     }
+
+
+def test_fails_api_check_when_observation_differs(monkeypatch, tmp_path):
+    scenario = tmp_path / "scenario.py"
+    scenario.write_text("print('unused')\n")
+    task = Task(
+        identifier="test",
+        version=1,
+        root=Path("."),
+        repository=Path("."),
+        image="python:3.13-slim",
+        dockerfile=None,
+        constraints=Constraints(timeout_seconds=1, memory_megabytes=64, cpu_cores=1),
+        checks=(),
+    )
+    check = Check(
+        name="test",
+        kind="api",
+        visibility="hidden",
+        path=scenario,
+        expected_stdout='{"status":"expected"}',
+    )
+
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(args[0], 0, '{"status":"actual"}\n', ""),
+    )
+
+    result = DockerRunner().run_api(task, Path("."), check)
+
+    assert result.returncode == 1
+    assert result.stderr == "API behavior does not match the contract"

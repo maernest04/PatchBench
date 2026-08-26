@@ -126,11 +126,11 @@ Prove that PatchBench is a general software-task evaluator rather than a backend
 ### Checklist
 
 - [x] Add a CLI-output evaluator for commands, exit codes, and filesystem effects.
-- [ ] Add a library/API-compatibility evaluator.
-- [ ] Add a refactor task that relies on behavioral preservation.
-- [ ] Add a task with an explicit policy or security constraint.
-- [ ] Document extension points for frontend, mobile, performance, and infrastructure evaluators.
-- [ ] Validate each new evaluator with correct and incorrect candidates.
+- [x] Add a library/API-compatibility evaluator.
+- [x] Add a refactor task that relies on behavioral preservation.
+- [x] Add a task with an explicit policy or security constraint.
+- [x] Document extension points for frontend, mobile, performance, and infrastructure evaluators.
+- [x] Validate each new evaluator with correct and incorrect candidates.
 
 ### Exit criterion
 
@@ -144,13 +144,13 @@ Evaluate real coding agents only after the evaluator and benchmark fixtures are 
 
 ### Checklist
 
-- [ ] Define a provider-neutral `AgentAdapter` contract.
-- [ ] Define fixed agent budgets for time, attempts, tools, tokens, and cost.
-- [ ] Add one adapter configured by environment variables.
-- [ ] Keep credentials out of source control, logs, reports, and persisted evidence.
-- [ ] Capture the final candidate patch and safe execution metadata.
+- [x] Define a provider-neutral `AgentAdapter` contract.
+- [x] Define fixed agent budgets for time, attempts, tools, tokens, and cost.
+- [x] Add one adapter configured by environment variables.
+- [x] Keep credentials out of source control, logs, reports, and persisted evidence.
+- [x] Capture the final candidate patch and safe execution metadata.
 - [ ] Evaluate fixture and agent-generated patches through exactly the same evaluator path.
-- [ ] Report task result separately from time, cost, and number of attempts.
+- [x] Report task result separately from time, cost, and number of attempts.
 
 ### Exit criterion
 

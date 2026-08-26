@@ -44,3 +44,12 @@ def test_loads_cli_contract():
     assert public_check.kind == "cli"
     assert public_check.command == ("python", "report.py", "Ada Lovelace")
     assert hidden_check.expected_files == (("report.json", '{"name": "Grace Hopper", "slug": "grace-hopper"}\n'),)
+
+
+def test_loads_api_contract():
+    task = load_task(Path("fixtures/api-user-directory"))
+    public_check, hidden_check = task.checks
+
+    assert public_check.kind == "pytest"
+    assert hidden_check.kind == "api"
+    assert hidden_check.expected_stdout.startswith('[{"email":"ada@example.com"')

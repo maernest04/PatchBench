@@ -1,0 +1,12 @@
+diff --git a/user_directory.py b/user_directory.py
+index 0c68fe4..1c9f6f3 100644
+--- a/user_directory.py
++++ b/user_directory.py
+@@ -8,2 +8,7 @@ class UserDirectory:
+     def lookup(self, email):
+         return self._users.get(email)
++
++    def find_by_name(self, name):
++        return next(
++            (user for user in self._users.values() if user["name"] == name), None
++        )

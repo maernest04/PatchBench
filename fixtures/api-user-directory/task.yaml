@@ -1,0 +1,21 @@
+id: api-user-directory-v1
+version: 1
+repository: repository
+runtime:
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+  cpu_cores: 1
+checks:
+  - name: visible-name-lookup
+    type: pytest
+    visibility: public
+    path: public/tests
+  - name: lookup-api-compatibility
+    type: api
+    visibility: hidden
+    path: hidden/scenarios/lookup_compatibility.py
+    expected:
+      stdout: '[{"email":"ada@example.com","result":{"email":"ada@example.com","name":"Ada Lovelace"}},{"email":"missing@example.com","result":null}]'

@@ -40,5 +40,6 @@ Task + repository + public materials
 - [Architecture](docs/architecture.md)
 - [Implementation plan](docs/implementation-plan.md)
 - [Development notes](docs/development-notes.md)
+- [Agent adapters](docs/agent-adapters.md)
 
 # PatchBench

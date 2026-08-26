@@ -80,6 +80,21 @@ class DockerRunner:
         )
         return self._run_check_command(command, task.constraints.timeout_seconds)
 
+    def run_api(self, task: Task, workspace: Path, check: Check) -> CommandResult:
+        assert check.path is not None
+        result = self._run_scenario(task, workspace, check.path)
+        if result.returncode != 0:
+            return result
+        observed = _normalize_output(result.stdout)
+        expected = _normalize_output(check.expected_stdout)
+        payload = {"expected": expected, "observed": observed}
+        return CommandResult(
+            returncode=0 if observed == expected else 1,
+            stdout=json.dumps(payload, sort_keys=True),
+            stderr="" if observed == expected else "API behavior does not match the contract",
+            duration_seconds=result.duration_seconds,
+        )
+
     def _run_scenario(self, task: Task, workspace: Path, scenario: Path) -> CommandResult:
         command = self._container_command(task, workspace)
         command.extend(
