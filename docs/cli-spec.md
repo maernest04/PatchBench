@@ -18,6 +18,14 @@ patchbench verify-working-tree --task <task-directory>
 
 The command collects tracked and untracked changes from the task repository's Git working tree, evaluates the resulting unified patch through the normal evaluator, and stores the result. A clean working tree is `INCONCLUSIVE`, because there is no candidate change to verify.
 
+## `patchbench codex-run`
+
+```text
+patchbench codex-run --task <task-directory> --prompt "<coding task>"
+```
+
+The command runs the installed Codex CLI against the task repository, then verifies Codex's working-tree changes through PatchBench before it returns.
+
 ### Inspect a stored run
 
 ```text

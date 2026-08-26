@@ -50,3 +50,11 @@ patchbench verify-working-tree --task <task-directory>
 ```
 
 PatchBench turns the current Git working-tree diff into the same candidate-patch evaluation used for agent adapters.
+
+## Direct Codex workflow
+
+```text
+patchbench codex-run --task <task-directory> --prompt "Implement the requested change"
+```
+
+This runs Codex in the task repository and immediately evaluates its resulting working-tree diff. It is intended for local development; PatchBench does not accept or reject the change on the developer's behalf.

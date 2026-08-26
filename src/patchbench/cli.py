@@ -6,6 +6,7 @@ from pathlib import Path
 
 from patchbench.agents import AgentBudget, AgentConfigurationError, AgentExecutionError, CommandAgentAdapter
 from patchbench.benchmark import build_report
+from patchbench.codex import CodexRunError, run_codex
 from patchbench.models import AgentMetadata, Classification, EvaluationResult
 from patchbench.evaluator import evaluate
 from patchbench.replay import replay
@@ -27,6 +28,11 @@ def main() -> int:
     working_tree_parser.add_argument("--task", required=True, type=Path)
     working_tree_parser.add_argument("--format", choices=("text", "json"), default="text")
     working_tree_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
+    codex_parser = subcommands.add_parser("codex-run")
+    codex_parser.add_argument("--task", required=True, type=Path)
+    codex_parser.add_argument("--prompt", required=True)
+    codex_parser.add_argument("--format", choices=("text", "json"), default="text")
+    codex_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
     agent_parser = subcommands.add_parser("agent-evaluate")
     agent_parser.add_argument("--task", required=True, type=Path)
     agent_parser.add_argument("--format", choices=("text", "json"), default="text")
@@ -78,20 +84,21 @@ def main() -> int:
         parser.error(str(error))
 
     if arguments.command == "verify-working-tree":
-        with tempfile.TemporaryDirectory(prefix="patchbench-working-tree-") as temporary_directory:
-            patch = Path(temporary_directory) / "candidate.patch"
-            try:
-                write_working_tree_patch(task.repository, patch)
-            except WorkingTreeError as error:
-                result = EvaluationResult(
-                    classification=Classification.INCONCLUSIVE,
-                    task=task,
-                    patch=patch,
-                    checks=(),
-                    reason=str(error),
-                )
-            else:
-                result = evaluate(task, patch)
+        result = _evaluate_working_tree(task, run_store)
+    elif arguments.command == "codex-run":
+        try:
+            run_codex(task.repository, arguments.prompt)
+        except CodexRunError as error:
+            result = EvaluationResult(
+                classification=Classification.INCONCLUSIVE,
+                task=task,
+                patch=Path("codex-output.patch"),
+                checks=(),
+                reason=str(error),
+            )
+        else:
+            result = _evaluate_working_tree(task, run_store)
+        if result.run_id is None:
             result = run_store.save(result)
     elif arguments.command == "agent-evaluate":
         budget = AgentBudget(
@@ -138,6 +145,22 @@ def _exit_code(classification: Classification) -> int:
     if classification is Classification.FAIL:
         return 1
     return 3
+
+
+def _evaluate_working_tree(task, run_store):
+    with tempfile.TemporaryDirectory(prefix="patchbench-working-tree-") as temporary_directory:
+        patch = Path(temporary_directory) / "candidate.patch"
+        try:
+            write_working_tree_patch(task.repository, patch)
+        except WorkingTreeError as error:
+            return EvaluationResult(
+                classification=Classification.INCONCLUSIVE,
+                task=task,
+                patch=patch,
+                checks=(),
+                reason=str(error),
+            )
+        return run_store.save(evaluate(task, patch))
 
 
 if __name__ == "__main__":
