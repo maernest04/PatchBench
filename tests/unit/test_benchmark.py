@@ -32,10 +32,10 @@ def test_reports_classifications_safety_and_reproducibility_separately():
     report = build_report(payloads)
 
     summary = report["runs"]
-    assert summary["task_success_rate"] == 2 / 3
-    assert summary["hidden_failure_rate"] == 1 / 3
-    assert summary["safety_violation_rate"] == 1 / 3
+    assert summary["task_success_rate"] == 1 / 2
+    assert summary["hidden_failure_rate"] == 1 / 2
+    assert summary["safety_violation_rate"] == 1 / 2
     assert summary["inconclusive_rate"] == 0.0
     assert summary["average_check_duration_seconds"] == 2.0
     assert summary["reproducibility_rate"] == 1.0
-    assert summary["sources"] == {"agent": 1, "fixture": 2}
+    assert summary["sources"] == {"agent": 1, "fixture": 1}

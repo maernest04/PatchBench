@@ -64,6 +64,11 @@
 - Added stored-run aggregation for task success, hidden failures, safety violations, inconclusives, runtime, and replay reproducibility.
 - Reports separate fixture and agent sources and state when no real-agent attempts or replay pairs are present.
 
+## 2026-08-25: First real-agent benchmark
+
+- Ran three local Codex attempts across each of the five current task fixtures, then replayed one result per task.
+- The versioned result reports 80% task success, 20% hidden failures, no inconclusives, and complete replay agreement.
+
 ## Note format
 
 Add dated entries for experiments, observed failure modes, rejected approaches, benchmark changes, and open questions. Promote significant, difficult-to-reverse choices to a decision record.

@@ -164,7 +164,7 @@ Produce a transparent report that compares candidate sources without overstating
 
 ### Checklist
 
-- [ ] Run repeated attempts for each task and candidate source.
+- [x] Run repeated attempts for each task and candidate source.
 - [x] Report task-success, hidden-failure, safety-violation, inconclusive, runtime, and reproducibility rates separately.
 - [x] Report task and evaluator limitations.
 - [x] Version benchmark tasks, evaluator behavior, and reports.

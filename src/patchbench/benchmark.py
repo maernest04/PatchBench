@@ -19,17 +19,18 @@ def build_report(payloads: list[dict]) -> dict:
 
 
 def _summary(payloads: list[dict]) -> dict:
-    total = len(payloads)
-    classifications = Counter(payload["classification"] for payload in payloads)
-    hidden_failures = sum(_has_failed_check(payload, visibility="hidden") for payload in payloads)
-    safety_violations = sum(_has_failed_check(payload, category="safety") for payload in payloads)
-    durations = [check["duration_seconds"] for payload in payloads for check in payload["checks"]]
     run_by_id = {payload.get("run_id"): payload for payload in payloads}
+    attempts = [payload for payload in payloads if not payload.get("replay_of")]
+    total = len(attempts)
+    classifications = Counter(payload["classification"] for payload in attempts)
+    hidden_failures = sum(_has_failed_check(payload, visibility="hidden") for payload in attempts)
+    safety_violations = sum(_has_failed_check(payload, category="safety") for payload in attempts)
+    durations = [check["duration_seconds"] for payload in attempts for check in payload["checks"]]
     replays = [payload for payload in payloads if payload.get("replay_of") in run_by_id]
     reproducible = sum(
         payload["classification"] == run_by_id[payload["replay_of"]]["classification"] for payload in replays
     )
-    sources = Counter("agent" if payload.get("agent") else "fixture" for payload in payloads)
+    sources = Counter(_source(payload, run_by_id) for payload in attempts)
     return {
         "total_runs": total,
         "sources": dict(sources),
@@ -54,6 +55,14 @@ def _has_failed_check(payload: dict, visibility: str | None = None, category: st
 
 def _rate(numerator: int, denominator: int) -> float:
     return numerator / denominator if denominator else 0.0
+
+
+def _source(payload: dict, run_by_id: dict[str, dict]) -> str:
+    if payload.get("agent"):
+        return "agent"
+    if payload.get("replay_of") in run_by_id:
+        return _source(run_by_id[payload["replay_of"]], run_by_id)
+    return "fixture"
 
 
 def _limitations(payloads: list[dict]) -> list[str]:
