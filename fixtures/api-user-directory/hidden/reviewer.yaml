@@ -1,0 +1,6 @@
+fault_id: lookup-return-shape-changed
+category: preservation
+affected_paths:
+  - user_directory.py
+affected_symbols:
+  - UserDirectory.lookup

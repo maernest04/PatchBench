@@ -1,0 +1,11 @@
+diff --git a/delivery.py b/delivery.py
+index 92dd789..b160848 100644
+--- a/delivery.py
++++ b/delivery.py
+@@ -3,4 +3,5 @@ class DeliveryService:
+         self.events = []
+ 
+     def deliver(self, message_id, payload):
+-        raise NotImplementedError
++        self.events.append({"id": message_id, "payload": payload})
++        return True

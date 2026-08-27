@@ -16,6 +16,8 @@ from patchbench.task_loader import load_task
         ("refactor-pricing", "breaking-refactor.patch", Classification.FAIL),
         ("redacted-audit-log", "correct.patch", Classification.PASS),
         ("redacted-audit-log", "leaks-secret.patch", Classification.FAIL),
+        ("retry-delivery", "correct.patch", Classification.PASS),
+        ("retry-delivery", "retry-duplicates.patch", Classification.FAIL),
     ],
 )
 def test_phase5_fixtures_classify_candidates(docker_runner, fixture_name, patch_name, classification):

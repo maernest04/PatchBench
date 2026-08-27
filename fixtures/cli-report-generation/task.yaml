@@ -8,6 +8,7 @@ constraints:
   timeout_seconds: 30
   memory_megabytes: 256
   cpu_cores: 1
+reviewer_ground_truth: hidden/reviewer.yaml
 checks:
   - name: visible-slug-output
     type: cli

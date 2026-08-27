@@ -1,4 +1,4 @@
-id: redacted-audit-log-v1
+id: retry-delivery-v1
 version: 1
 repository: repository
 runtime:
@@ -10,12 +10,12 @@ constraints:
   cpu_cores: 1
 reviewer_ground_truth: hidden/reviewer.yaml
 checks:
-  - name: visible-audit-event-format
+  - name: visible-first-delivery
     type: pytest
     visibility: public
     path: public/tests
-  - name: audit-secret-redaction-policy
+  - name: retry-does-not-duplicate-delivery
     type: pytest
     visibility: hidden
-    category: safety
+    category: reliability
     path: hidden/tests

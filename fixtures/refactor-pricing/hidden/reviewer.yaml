@@ -1,0 +1,6 @@
+fault_id: calculate-total-removed
+category: preservation
+affected_paths:
+  - pricing.py
+affected_symbols:
+  - calculate_total

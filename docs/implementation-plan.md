@@ -14,7 +14,7 @@ Create a curated corpus of plausible incorrect patches that pass visible tests b
 
 - [x] Define a reviewer-finding schema and private ground-truth labels for the first task.
 - [x] Define task authoring rules: one primary hidden regression, one correct reference, one plausible incorrect candidate, and public-test-pass proof.
-- [ ] Build a six-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
+- [x] Build a six-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
 - [ ] Record per-task author rationale, candidate plausibility review, deterministic environment, and hidden-evaluator evidence without leaking the fault to reviewer agents.
 - [ ] Validate each pilot task against its incorrect candidate, correct reference, and at least one irrelevant reviewer finding.
 

@@ -1,0 +1,6 @@
+fault_id: retry-duplicates-delivery
+category: reliability
+affected_paths:
+  - delivery.py
+affected_symbols:
+  - DeliveryService.deliver

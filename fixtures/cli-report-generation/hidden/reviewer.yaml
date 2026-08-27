@@ -1,0 +1,6 @@
+fault_id: report-output-is-not-json
+category: correctness
+affected_paths:
+  - report.py
+affected_symbols:
+  - main

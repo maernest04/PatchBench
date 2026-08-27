@@ -1,0 +1,17 @@
+diff --git a/delivery.py b/delivery.py
+index 92dd789..1b432d7 100644
+--- a/delivery.py
++++ b/delivery.py
+@@ -1,6 +1,11 @@
+ class DeliveryService:
+     def __init__(self):
+         self.events = []
++        self._delivered_ids = set()
+ 
+     def deliver(self, message_id, payload):
+-        raise NotImplementedError
++        if message_id in self._delivered_ids:
++            return False
++        self._delivered_ids.add(message_id)
++        self.events.append({"id": message_id, "payload": payload})
++        return True

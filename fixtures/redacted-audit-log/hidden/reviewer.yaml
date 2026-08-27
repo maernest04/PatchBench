@@ -1,0 +1,6 @@
+fault_id: audit-log-leaks-api-key
+category: safety
+affected_paths:
+  - audit.py
+affected_symbols:
+  - format_login_event

@@ -24,6 +24,30 @@ def test_scores_matching_finding_as_detected():
     assert score.reason == "finding matches ground-truth path"
 
 
+@pytest.mark.parametrize(
+    ("fixture_name", "category", "path", "symbol"),
+    [
+        ("cli-report-generation", "correctness", "report.py", "main"),
+        ("api-user-directory", "preservation", "user_directory.py", "UserDirectory.lookup"),
+        ("refactor-pricing", "preservation", "pricing.py", "calculate_total"),
+        ("redacted-audit-log", "safety", "audit.py", "format_login_event"),
+        ("retry-delivery", "reliability", "delivery.py", "DeliveryService.deliver"),
+    ],
+)
+def test_scores_pilot_fixture_finding_as_detected(fixture_name, category, path, symbol):
+    score = score_finding(
+        load_task(Path("fixtures") / fixture_name),
+        ReviewerFinding(
+            category=category,
+            affected_paths=(path,),
+            affected_symbols=(symbol,),
+            rationale="The candidate changes required behavior.",
+        ),
+    )
+
+    assert score.classification is ReviewClassification.DETECTED
+
+
 def test_scores_no_finding_as_missed():
     score = score_finding(load_task(Path("fixtures/cache-invalidation")), None)
 
