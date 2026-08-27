@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from patchbench.models import Check, Constraints, Task
+from patchbench.models import Check, Constraints, ReviewerGroundTruth, Task
 
 
 class TaskValidationError(ValueError):
@@ -53,6 +53,7 @@ def load_task(task_directory: Path) -> Task:
     checks = tuple(_load_check(task_directory, value, index) for index, value in enumerate(raw_checks))
     if {check.visibility for check in checks} != {"public", "hidden"}:
         raise TaskValidationError("checks must include public and hidden visibility")
+    reviewer_ground_truth = _load_reviewer_ground_truth(task_directory, raw)
 
     return Task(
         identifier=identifier,
@@ -67,7 +68,44 @@ def load_task(task_directory: Path) -> Task:
             cpu_cores=cpu_cores,
         ),
         checks=checks,
+        reviewer_ground_truth=reviewer_ground_truth,
     )
+
+
+def _load_reviewer_ground_truth(task_directory: Path, raw: dict) -> ReviewerGroundTruth | None:
+    value = raw.get("reviewer_ground_truth")
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise TaskValidationError("reviewer_ground_truth must be a non-empty string")
+    path = Path(value)
+    if path.is_absolute() or ".." in path.parts:
+        raise TaskValidationError("reviewer_ground_truth has an unsafe path")
+    ground_truth_path = task_directory / path
+    try:
+        raw_ground_truth = yaml.safe_load(ground_truth_path.read_text())
+    except OSError as error:
+        raise TaskValidationError(f"read reviewer ground truth: {error}") from error
+    except yaml.YAMLError as error:
+        raise TaskValidationError(f"parse reviewer ground truth: {error}") from error
+    if not isinstance(raw_ground_truth, dict):
+        raise TaskValidationError("reviewer ground truth must be an object")
+    category = _require_string(raw_ground_truth, "category")
+    if category not in {"correctness", "preservation", "safety", "reliability", "efficiency"}:
+        raise TaskValidationError(f"reviewer ground truth has invalid category: {category}")
+    return ReviewerGroundTruth(
+        fault_id=_require_string(raw_ground_truth, "fault_id"),
+        category=category,
+        affected_paths=_load_reviewer_evidence(raw_ground_truth, "affected_paths"),
+        affected_symbols=_load_reviewer_evidence(raw_ground_truth, "affected_symbols"),
+    )
+
+
+def _load_reviewer_evidence(value: dict, field: str) -> tuple[str, ...]:
+    raw_values = value.get(field)
+    if not isinstance(raw_values, list) or not raw_values or any(not isinstance(item, str) or not item.strip() for item in raw_values):
+        raise TaskValidationError(f"reviewer ground truth.{field} must be a non-empty list of strings")
+    return tuple(raw_values)
 
 
 def _load_check(task_directory: Path, raw: object, index: int) -> Check:

@@ -183,7 +183,7 @@ Create a curated corpus of plausible incorrect patches that pass visible tests b
 ### Phase 8A: Corpus contract and pilot
 
 - [ ] Define the versioned reviewer-task schema, ground-truth fault labels, candidate provenance, and public-versus-hidden layout.
-- [ ] Define task authoring rules: one primary hidden regression, one correct reference, one plausible incorrect candidate, and public-test-pass proof.
+- [x] Define task authoring rules: one primary hidden regression, one correct reference, one plausible incorrect candidate, and public-test-pass proof.
 - [ ] Build a six-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
 - [ ] Record per-task author rationale, candidate plausibility review, deterministic environment, and hidden-evaluator evidence without leaking the fault to reviewer agents.
 - [ ] Validate each pilot task against its incorrect candidate, correct reference, and at least one irrelevant reviewer finding.

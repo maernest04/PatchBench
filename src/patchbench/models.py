@@ -9,6 +9,12 @@ class Classification(StrEnum):
     INCONCLUSIVE = "INCONCLUSIVE"
 
 
+class ReviewClassification(StrEnum):
+    DETECTED = "DETECTED"
+    MISSED = "MISSED"
+    FALSE_POSITIVE = "FALSE_POSITIVE"
+
+
 @dataclass(frozen=True)
 class Constraints:
     timeout_seconds: int
@@ -39,6 +45,29 @@ class Task:
     dockerfile: Path | None
     constraints: Constraints
     checks: tuple[Check, ...]
+    reviewer_ground_truth: "ReviewerGroundTruth | None" = None
+
+
+@dataclass(frozen=True)
+class ReviewerGroundTruth:
+    fault_id: str
+    category: str
+    affected_paths: tuple[str, ...]
+    affected_symbols: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ReviewerFinding:
+    category: str
+    affected_paths: tuple[str, ...]
+    affected_symbols: tuple[str, ...]
+    rationale: str
+
+
+@dataclass(frozen=True)
+class ReviewScore:
+    classification: ReviewClassification
+    reason: str
 
 
 @dataclass(frozen=True)

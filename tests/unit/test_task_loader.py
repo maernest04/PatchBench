@@ -14,6 +14,9 @@ def test_loads_cache_invalidation_task():
     assert task.constraints.cpu_cores == 1.0
     assert [check.visibility for check in task.checks] == ["public", "hidden", "hidden"]
     assert task.checks[-1].kind == "differential"
+    assert task.reviewer_ground_truth is not None
+    assert task.reviewer_ground_truth.fault_id == "stale-cache-after-delete"
+    assert task.reviewer_ground_truth.affected_symbols == ("UserStore.delete_user",)
 
 
 def test_rejects_malformed_task_contract(tmp_path):

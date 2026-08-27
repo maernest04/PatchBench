@@ -1,0 +1,6 @@
+fault_id: stale-cache-after-delete
+category: preservation
+affected_paths:
+  - user_store.py
+affected_symbols:
+  - UserStore.delete_user

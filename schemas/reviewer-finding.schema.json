@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["category", "affected_paths", "affected_symbols", "rationale"],
+  "properties": {
+    "category": {"enum": ["correctness", "preservation", "safety", "reliability", "efficiency"]},
+    "affected_paths": {"type": "array", "items": {"type": "string"}},
+    "affected_symbols": {"type": "array", "items": {"type": "string"}},
+    "rationale": {"type": "string", "minLength": 1}
+  }
+}
