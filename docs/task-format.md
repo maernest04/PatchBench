@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A task contract describes what an evaluated agent may see, what PatchBench must evaluate privately, and how the result is determined.
+A task contract defines the repository, execution limits, public checks, hidden checks, and optional private reviewer ground truth.
 
 ## Directory shape
 
@@ -25,25 +25,18 @@ fixtures/<task-id>/
 ```yaml
 id: cache-invalidation-v1
 version: 1
-language: python
 repository: repository
 
-public:
-  task: public/task.md
-  tests: public/tests
-
-hidden:
-  tests: hidden/tests
-
 constraints:
-  network: disabled
   timeout_seconds: 30
-  memory_megabytes: 512
+  memory_megabytes: 256
   cpu_cores: 1
 
 runtime:
   image: patchbench-python-pytest:0.1
   dockerfile: Dockerfile
+
+reviewer_ground_truth: hidden/reviewer.yaml
 
 checks:
   - type: pytest
@@ -70,7 +63,16 @@ checks:
       stdout: '[{"email":"missing@example.com","result":null}]'
 ```
 
-The exact schema is finalized in Phase 0. `runtime.image` identifies the container image used for checks. When `runtime.dockerfile` is present, PatchBench builds that image from the task directory before executing checks.
+`runtime.image` identifies the container image used for checks. When `runtime.dockerfile` is present, PatchBench builds that image from the task directory before executing checks. `reviewer_ground_truth` is optional and must point to a private YAML file inside the task directory.
+
+```yaml
+fault_id: stale-cache-after-delete
+category: preservation
+affected_paths:
+  - user_store.py
+affected_symbols:
+  - UserStore.delete_user
+```
 
 ## Contract rules
 
@@ -83,6 +85,7 @@ The exact schema is finalized in Phase 0. `runtime.image` identifies the contain
 - An API check runs a compatibility scenario in the candidate workspace and compares its normalized JSON observation with the declared contract output.
 - A task must define enough conditions to classify a result honestly.
 - An ambiguous task must return `INCONCLUSIVE` rather than create a misleading failure.
+- Reviewer ground truth must stay under `hidden/` and must not be copied into a reviewer workspace.
 
 ## Candidate rules
 

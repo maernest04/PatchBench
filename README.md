@@ -38,12 +38,8 @@ The existing evaluator is the benchmark's execution engine. The next phase build
 
 ## Repository guide
 
-- [Product specification](docs/product-spec.md)
-- [Evaluation specification](docs/evaluation-spec.md)
 - [Benchmark specification](docs/benchmark-spec.md)
 - [Architecture](docs/architecture.md)
-- [Implementation plan](docs/implementation-plan.md)
-- [Development notes](docs/development-notes.md)
-- [Agent adapters](docs/agent-adapters.md)
-
-# PatchBench
+- [Task format](docs/task-format.md)
+- [CLI specification](docs/cli-spec.md)
+- [Build plan](docs/implementation-plan.md)

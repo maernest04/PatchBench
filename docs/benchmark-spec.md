@@ -30,6 +30,16 @@ PatchBench establishes candidate ground truth with the hidden contract before sc
 
 The scorer uses pre-authored labels and executed artifacts, never an LLM judge. A review score never changes the candidate's ground truth.
 
+## Ground-truth evaluation
+
+PatchBench classifies candidate execution as `PASS`, `FAIL`, or `INCONCLUSIVE`.
+
+- `PASS`: every required check passes.
+- `FAIL`: a required check fails with retained execution evidence.
+- `INCONCLUSIVE`: the environment, task contract, or evaluator cannot support a trustworthy conclusion.
+
+Tasks may combine acceptance, preservation, stateful, safety, reliability, and efficiency checks. Every hidden-regression task must prove that its incorrect candidate passes public checks, fails hidden checks, and can be replayed. Correct references must pass the same hidden checks.
+
 ## Comparison protocol
 
 Each frozen corpus is evaluated with three workflows:
@@ -51,3 +61,7 @@ Each report records the corpus, prompt, reviewer configuration, tool policy, bud
 ## Release and leakage
 
 Task versions and evaluators are immutable once released. Public materials, candidate patches, category metadata, and evaluator versions may be published. Active hidden checks, reference patches, exact accepted labels, and expected outcomes stay sealed until a benchmark version is retired or separately disclosed.
+
+## Benchmark quality
+
+Unit tests cover task parsing, patch validation, scoring, classification, normalization, and reporting. Integration tests cover temporary workspaces, Docker execution, public and hidden checks, persistence, and cleanup. Every fixture needs a correct candidate, a visible-test-passing incorrect candidate, and defined infrastructure-failure behavior. Record suspected false positives and false negatives with their task version and evidence.

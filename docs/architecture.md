@@ -74,6 +74,32 @@ Creates human-readable and machine-readable results while preserving separate di
 
 The scorer matches a reviewer finding against task-authored ground-truth labels and validates any reviewer-produced verification artifact by execution. Text alone can establish a declared detection; only a distinguishing executable artifact establishes executable detection. Neither score changes the candidate's hidden ground truth.
 
+## Repository layout
+
+```text
+src/patchbench/
+├── cli.py
+├── models.py
+├── task_loader.py
+├── workspace.py
+├── runner.py
+├── evaluator.py
+├── review_scoring.py
+├── replay.py
+├── reporter.py
+├── agents.py
+└── storage/
+```
+
+- `models.py` defines task, evaluation, and reviewer-finding records.
+- `task_loader.py` loads public and hidden task metadata without exposing hidden files to agents.
+- `workspace.py`, `runner.py`, and `evaluator.py` create isolated candidate workspaces and establish ground truth.
+- `review_scoring.py` compares a reviewer finding with private task labels.
+- `agents.py` contains the current candidate-generating adapter; a reviewer adapter will be a separate public-only integration.
+- `storage/`, `replay.py`, and `reporter.py` persist and present reproducible evidence.
+
+New evaluator types must use the existing task loader, workspace manager, Docker runner, evidence model, reporter, and run store. They define observable execution, public and hidden boundaries, deterministic pass/fail conditions, and when an environment error becomes `INCONCLUSIVE`.
+
 ## Isolation requirements
 
 - Network disabled by default.
