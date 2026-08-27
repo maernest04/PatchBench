@@ -1,3 +1,3 @@
-from patchbench.storage.filesystem import FilesystemRunStore, RunNotFoundError, StoredRun
+from patchbench.storage.filesystem import FilesystemReviewStore, FilesystemRunStore, RunNotFoundError, StoredRun
 
-__all__ = ["FilesystemRunStore", "RunNotFoundError", "StoredRun"]
+__all__ = ["FilesystemReviewStore", "FilesystemRunStore", "RunNotFoundError", "StoredRun"]

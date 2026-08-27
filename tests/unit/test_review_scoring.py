@@ -46,6 +46,21 @@ def test_scores_unrelated_finding_as_false_positive():
     assert score.reason == "finding category does not match ground truth"
 
 
+def test_scores_matching_symbol_as_detected_despite_category_difference():
+    score = score_finding(
+        load_task(Path("fixtures/cache-invalidation")),
+        ReviewerFinding(
+            category="correctness",
+            affected_paths=("user_store.py",),
+            affected_symbols=("UserStore.delete_user",),
+            rationale="The delete path leaves stale cache entries available.",
+        ),
+    )
+
+    assert score.classification is ReviewClassification.DETECTED
+    assert score.reason == "finding matches ground-truth symbol"
+
+
 def test_scores_wrong_evidence_as_false_positive():
     score = score_finding(
         load_task(Path("fixtures/cache-invalidation")),

@@ -44,6 +44,18 @@ The command creates a temporary workspace containing only `repository/` and `pub
 
 The command must write a unified diff to `PATCHBENCH_AGENT_OUTPUT_PATCH`. PatchBench evaluates that patch through the normal evaluator and stores only safe attempt metadata.
 
+## `patchbench review-evaluate`
+
+```text
+PATCHBENCH_REVIEWER_COMMAND="your-reviewer-command" patchbench review-evaluate --task <task-directory> --patch <candidate.patch>
+```
+
+The command applies the candidate patch in a temporary reviewer workspace, then copies only the patched repository, public task materials, and candidate patch. The reviewer receives `PATCHBENCH_REVIEWER_REPOSITORY`, `PATCHBENCH_REVIEWER_PUBLIC_DIR`, `PATCHBENCH_REVIEWER_PATCH`, `PATCHBENCH_REVIEWER_OUTPUT`, and its declared tool, token, and cost budgets.
+
+The reviewer writes either `null` or a JSON finding containing `category`, `affected_paths`, `affected_symbols`, and `rationale`. PatchBench stores and prints `DETECTED`, `MISSED`, `FALSE_POSITIVE`, or `INCONCLUSIVE`.
+
+Use the included Codex bridge by setting `PATCHBENCH_REVIEWER_COMMAND` to `python3` followed by the absolute path to `scripts/patchbench_codex_reviewer.py`. The bridge uses `codex exec` with a JSON schema and writes only Codex's final structured response to the reviewer output path.
+
 ### Inspect a stored run
 
 ```text
@@ -77,7 +89,7 @@ The command aggregates stored candidate-evaluation results. It does not yet repo
 
 ## Output requirements
 
-`evaluate`, `verify-working-tree`, `codex-run`, `agent-evaluate`, `show`, `replay`, and `report` support readable terminal output or `--format json`.
+`evaluate`, `verify-working-tree`, `codex-run`, `agent-evaluate`, `review-evaluate`, `show`, `replay`, and `report` support readable terminal output or `--format json`.
 
 ## Non-goals
 

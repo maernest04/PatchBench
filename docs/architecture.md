@@ -20,9 +20,9 @@ Benchmark task + reviewer configuration
        Evidence store and report generator
 ```
 
-## Planned reviewer benchmark extension
+## Reviewer benchmark workflow
 
-The implemented evaluator establishes whether a candidate patch is actually incorrect. The planned extension measures whether a reviewer agent can discover that issue without access to hidden materials.
+The evaluator establishes whether a candidate patch is actually incorrect. The reviewer workflow measures whether a configured reviewer command can identify that issue without access to hidden materials. Executable reviewer artifacts remain a later extension.
 
 ```text
 Public task + repository + candidate patch
@@ -70,9 +70,9 @@ Persists task metadata, candidate revision, checks, logs, seeds, observations, c
 
 Creates human-readable and machine-readable results while preserving separate dimensions instead of an opaque score.
 
-### Planned reviewer scorer
+### Reviewer scorer
 
-The scorer matches a reviewer finding against task-authored ground-truth labels and validates any reviewer-produced verification artifact by execution. Text alone can establish a declared detection; only a distinguishing executable artifact establishes executable detection. Neither score changes the candidate's hidden ground truth.
+The scorer matches a reviewer finding against task-authored ground-truth labels. It records detected, missed, false-positive, or inconclusive outcomes without changing candidate ground truth. A later extension will validate reviewer-produced verification artifacts by execution.
 
 ## Repository layout
 

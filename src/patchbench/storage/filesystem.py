@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
-from patchbench.models import EvaluationResult
+from patchbench.models import EvaluationResult, ReviewResult
 from patchbench.reporter import result_payload
 
 
@@ -97,9 +97,45 @@ class FilesystemRunStore:
         )
 
 
+class FilesystemReviewStore:
+    def __init__(self, root: Path):
+        self.root = root
+
+    def save(self, result: ReviewResult) -> ReviewResult:
+        review_id = f"review-{uuid4().hex[:12]}"
+        stored_result = replace(result, review_id=review_id)
+        review_directory = self.root / review_id
+        review_directory.mkdir(parents=True)
+        if stored_result.patch.is_file():
+            shutil.copy2(stored_result.patch, review_directory / "candidate.patch")
+        payload = {
+            "review_id": review_id,
+            "task": {"id": stored_result.task.identifier, "version": stored_result.task.version},
+            "patch_sha256": _sha256(stored_result.patch) if stored_result.patch.is_file() else None,
+            "score": stored_result.score.classification,
+            "reason": stored_result.score.reason,
+            "finding": _finding_payload(stored_result),
+            "duration_seconds": stored_result.duration_seconds,
+            "created_at": datetime.now(UTC).isoformat(),
+        }
+        (review_directory / "result.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+        return stored_result
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(65536), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _finding_payload(result: ReviewResult) -> dict | None:
+    if result.finding is None:
+        return None
+    return {
+        "category": result.finding.category,
+        "affected_paths": result.finding.affected_paths,
+        "affected_symbols": result.finding.affected_symbols,
+        "rationale": result.finding.rationale,
+    }

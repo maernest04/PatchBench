@@ -22,7 +22,7 @@ The reviewer returns a structured finding: claimed category, affected path or sy
 
 PatchBench establishes candidate ground truth with the hidden contract before scoring any review.
 
-- `detected`: the finding matches the task-authored fault category and affected behavior evidence.
+- `detected`: the finding matches the task-authored affected behavior evidence. Category is supporting evidence and may differ when the same regression has a valid alternate framing.
 - `executable_detected`: a detection plus an artifact that fails on the incorrect candidate and passes on the correct reference or baseline.
 - `missed`: no finding identifies the known regression.
 - `false_positive`: the reviewer asserts a defect without task-ground-truth or executable support.

@@ -7,11 +7,13 @@ from pathlib import Path
 from patchbench.agents import AgentBudget, AgentConfigurationError, AgentExecutionError, CommandAgentAdapter
 from patchbench.benchmark import build_report
 from patchbench.codex import CodexRunError, run_codex
-from patchbench.models import AgentMetadata, Classification, EvaluationResult
+from patchbench.models import AgentMetadata, Classification, EvaluationResult, ReviewClassification, ReviewResult, ReviewScore
 from patchbench.evaluator import evaluate
 from patchbench.replay import replay
-from patchbench.reporter import render_json, render_stored_text, render_text
-from patchbench.storage import FilesystemRunStore, RunNotFoundError
+from patchbench.reporter import render_json, render_review_json, render_review_text, render_stored_text, render_text
+from patchbench.review_scoring import score_finding
+from patchbench.reviewers import CommandReviewerAdapter, ReviewerBudget, ReviewerConfigurationError, ReviewerExecutionError
+from patchbench.storage import FilesystemReviewStore, FilesystemRunStore, RunNotFoundError
 from patchbench.task_loader import TaskValidationError, load_task
 from patchbench.working_tree import WorkingTreeError, write_working_tree_patch
 
@@ -42,6 +44,15 @@ def main() -> int:
     agent_parser.add_argument("--max-tool-calls", type=int, default=50)
     agent_parser.add_argument("--max-tokens", type=int, default=100000)
     agent_parser.add_argument("--max-cost-usd", type=float, default=10.0)
+    reviewer_parser = subcommands.add_parser("review-evaluate")
+    reviewer_parser.add_argument("--task", required=True, type=Path)
+    reviewer_parser.add_argument("--patch", required=True, type=Path)
+    reviewer_parser.add_argument("--format", choices=("text", "json"), default="text")
+    reviewer_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/reviews"))
+    reviewer_parser.add_argument("--timeout-seconds", type=int, default=600)
+    reviewer_parser.add_argument("--max-tool-calls", type=int, default=50)
+    reviewer_parser.add_argument("--max-tokens", type=int, default=100000)
+    reviewer_parser.add_argument("--max-cost-usd", type=float, default=10.0)
     show_parser = subcommands.add_parser("show")
     show_parser.add_argument("run_id")
     show_parser.add_argument("--format", choices=("text", "json"), default="text")
@@ -83,6 +94,28 @@ def main() -> int:
     except TaskValidationError as error:
         parser.error(str(error))
 
+    if arguments.command == "review-evaluate":
+        budget = ReviewerBudget(
+            timeout_seconds=arguments.timeout_seconds,
+            max_tool_calls=arguments.max_tool_calls,
+            max_tokens=arguments.max_tokens,
+            max_cost_usd=arguments.max_cost_usd,
+        )
+        try:
+            with tempfile.TemporaryDirectory(prefix="patchbench-review-output-") as temporary_directory:
+                attempt = CommandReviewerAdapter.from_environment().review(task, arguments.patch, Path(temporary_directory), budget)
+            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding), attempt.finding, attempt.duration_seconds)
+        except (ReviewerConfigurationError, ReviewerExecutionError, ValueError) as error:
+            result = ReviewResult(
+                task,
+                arguments.patch,
+                ReviewScore(ReviewClassification.INCONCLUSIVE, str(error)),
+                None,
+                None,
+            )
+        result = FilesystemReviewStore(arguments.artifacts_dir).save(result)
+        print(render_review_json(result) if arguments.format == "json" else render_review_text(result))
+        return 3 if result.score.classification is ReviewClassification.INCONCLUSIVE else 0
     if arguments.command == "verify-working-tree":
         result = _evaluate_working_tree(task, run_store)
     elif arguments.command == "codex-run":

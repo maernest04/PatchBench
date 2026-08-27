@@ -1,6 +1,6 @@
 import json
 
-from patchbench.models import EvaluationResult
+from patchbench.models import EvaluationResult, ReviewResult
 
 
 def render_text(result: EvaluationResult) -> str:
@@ -81,3 +81,32 @@ def render_stored_text(payload: dict) -> str:
     if payload.get("reason"):
         lines.append(f"Reason: {payload['reason']}")
     return "\n".join(lines)
+
+
+def render_review_text(result: ReviewResult) -> str:
+    lines = [result.score.classification, f"Task: {result.task.identifier}@{result.task.version}"]
+    if result.review_id:
+        lines.append(f"Review: {result.review_id}")
+    lines.append(f"Reason: {result.score.reason}")
+    return "\n".join(lines)
+
+
+def render_review_json(result: ReviewResult) -> str:
+    return json.dumps(
+        {
+            "review_id": result.review_id,
+            "task": {"id": result.task.identifier, "version": result.task.version},
+            "score": result.score.classification,
+            "reason": result.score.reason,
+            "finding": None
+            if result.finding is None
+            else {
+                "category": result.finding.category,
+                "affected_paths": result.finding.affected_paths,
+                "affected_symbols": result.finding.affected_symbols,
+                "rationale": result.finding.rationale,
+            },
+            "duration_seconds": result.duration_seconds,
+        },
+        sort_keys=True,
+    )

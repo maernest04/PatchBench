@@ -13,6 +13,7 @@ class ReviewClassification(StrEnum):
     DETECTED = "DETECTED"
     MISSED = "MISSED"
     FALSE_POSITIVE = "FALSE_POSITIVE"
+    INCONCLUSIVE = "INCONCLUSIVE"
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,16 @@ class ReviewerFinding:
 class ReviewScore:
     classification: ReviewClassification
     reason: str
+
+
+@dataclass(frozen=True)
+class ReviewResult:
+    task: Task
+    patch: Path
+    score: ReviewScore
+    finding: ReviewerFinding | None
+    duration_seconds: float | None
+    review_id: str | None = None
 
 
 @dataclass(frozen=True)

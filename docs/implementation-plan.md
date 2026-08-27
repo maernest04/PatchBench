@@ -39,8 +39,9 @@ Measure whether an AI reviewer identifies the corpus's known regression without 
 ### Checklist
 
 - [x] Define a structured reviewer finding with category, affected paths or symbols, and rationale.
-- [ ] Define a provider-neutral reviewer adapter with fixed time, tool, token, cost, and retry budgets.
-- [ ] Build a public-only reviewer workspace containing the repository, task, public tests, and incorrect candidate patch.
+- [x] Define a provider-neutral reviewer adapter with fixed time, tool, token, and cost budgets.
+- [x] Build a public-only reviewer workspace containing the repository, task, public tests, and incorrect candidate patch.
+- [x] Add a Codex reviewer bridge that produces schema-conforming findings.
 - [x] Implement deterministic scoring against pre-authored ground-truth fault labels.
 - [ ] Validate executable artifacts by running them against the incorrect candidate and correct reference or baseline as appropriate.
 - [ ] Classify detection, executable detection, miss, false positive, and inconclusive independently.

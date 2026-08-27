@@ -7,10 +7,12 @@ def score_finding(task: Task, finding: ReviewerFinding | None) -> ReviewScore:
         raise ValueError(f"task has no reviewer ground truth: {task.identifier}")
     if finding is None:
         return ReviewScore(classification=ReviewClassification.MISSED, reason="reviewer reported no finding")
+    matching_paths = set(finding.affected_paths) & set(ground_truth.affected_paths)
+    matching_symbols = set(finding.affected_symbols) & set(ground_truth.affected_symbols)
+    if finding.category == ground_truth.category and matching_paths:
+        return ReviewScore(classification=ReviewClassification.DETECTED, reason="finding matches ground-truth path")
+    if matching_symbols:
+        return ReviewScore(classification=ReviewClassification.DETECTED, reason="finding matches ground-truth symbol")
     if finding.category != ground_truth.category:
         return ReviewScore(classification=ReviewClassification.FALSE_POSITIVE, reason="finding category does not match ground truth")
-    if set(finding.affected_paths) & set(ground_truth.affected_paths):
-        return ReviewScore(classification=ReviewClassification.DETECTED, reason="finding matches ground-truth path")
-    if set(finding.affected_symbols) & set(ground_truth.affected_symbols):
-        return ReviewScore(classification=ReviewClassification.DETECTED, reason="finding matches ground-truth symbol")
     return ReviewScore(classification=ReviewClassification.FALSE_POSITIVE, reason="finding evidence does not match ground truth")
