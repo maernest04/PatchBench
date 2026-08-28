@@ -2,6 +2,7 @@ from collections import Counter
 
 
 REPORT_VERSION = 1
+REVIEW_REPORT_VERSION = 1
 
 
 def build_report(payloads: list[dict]) -> dict:
@@ -15,6 +16,24 @@ def build_report(payloads: list[dict]) -> dict:
         "runs": _summary(payloads),
         "tasks": {key: _summary(task_payloads) for key, task_payloads in by_task.items()},
         "limitations": _limitations(payloads),
+    }
+
+
+def build_review_report(payloads: list[dict]) -> dict:
+    by_task = {}
+    for payload in payloads:
+        task = payload["task"]
+        key = f"{task['id']}@{task['version']}"
+        by_task.setdefault(key, []).append(payload)
+    return {
+        "review_report_version": REVIEW_REPORT_VERSION,
+        "reviews": _review_summary(payloads),
+        "tasks": {key: _review_summary(task_payloads) for key, task_payloads in by_task.items()},
+        "attempts": [_review_attempt(payload) for payload in payloads],
+        "limitations": [
+            "Rates describe only stored reviewer attempts and are not a general model ranking.",
+            "Correct control patches are not yet distinguished from known-regression patches in stored review records.",
+        ],
     }
 
 
@@ -41,6 +60,33 @@ def _summary(payloads: list[dict]) -> dict:
         "average_check_duration_seconds": sum(durations) / len(durations) if durations else None,
         "reproducibility_rate": _rate(reproducible, len(replays)) if replays else None,
         "replay_count": len(replays),
+    }
+
+
+def _review_summary(payloads: list[dict]) -> dict:
+    scores = Counter(payload["score"] for payload in payloads)
+    total = len(payloads)
+    durations = [payload["duration_seconds"] for payload in payloads if payload["duration_seconds"] is not None]
+    return {
+        "total_reviews": total,
+        "outcomes": dict(scores),
+        "detection_rate": _rate(scores["DETECTED"], total),
+        "miss_rate": _rate(scores["MISSED"], total),
+        "false_positive_rate": _rate(scores["FALSE_POSITIVE"], total),
+        "inconclusive_rate": _rate(scores["INCONCLUSIVE"], total),
+        "average_duration_seconds": sum(durations) / len(durations) if durations else None,
+    }
+
+
+def _review_attempt(payload: dict) -> dict:
+    return {
+        "review_id": payload["review_id"],
+        "task": payload["task"],
+        "score": payload["score"],
+        "reason": payload["reason"],
+        "finding": payload["finding"],
+        "duration_seconds": payload["duration_seconds"],
+        "created_at": payload["created_at"],
     }
 
 

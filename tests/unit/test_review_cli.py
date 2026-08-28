@@ -40,3 +40,33 @@ def test_review_evaluate_scores_and_stores_finding(tmp_path, monkeypatch, capsys
 
     assert payload["score"] == "DETECTED"
     assert (tmp_path / "reviews" / payload["review_id"] / "result.json").is_file()
+
+
+def test_review_report_aggregates_stored_reviews(tmp_path, monkeypatch, capsys):
+    reviews = tmp_path / "reviews"
+    review = reviews / "review-1"
+    review.mkdir(parents=True)
+    (review / "result.json").write_text(
+        json.dumps(
+            {
+                "review_id": "review-1",
+                "task": {"id": "cache-invalidation-v1", "version": 1},
+                "score": "DETECTED",
+                "reason": "finding matches ground-truth symbol",
+                "finding": None,
+                "duration_seconds": 3.0,
+                "created_at": "2026-08-28T00:00:00+00:00",
+            }
+        )
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["patchbench", "review-report", "--artifacts-dir", str(reviews), "--format", "json"],
+    )
+
+    assert main() == 0
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["reviews"]["detection_rate"] == 1.0
+    assert payload["tasks"]["cache-invalidation-v1@1"]["total_reviews"] == 1

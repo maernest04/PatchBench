@@ -2,7 +2,7 @@
 
 ## Completed foundation
 
-PatchBench can apply a unified diff to an isolated Docker workspace, run public and hidden pytest, differential, CLI, API, and policy checks, classify results as `PASS`, `FAIL`, or `INCONCLUSIVE`, and retain replayable evidence. It includes five Python fixtures, candidate-generating agent adapters, working-tree verification, Codex integration, and stored-run reporting.
+PatchBench can apply a unified diff to an isolated Docker workspace, run public and hidden pytest, differential, CLI, API, and policy checks, classify results as `PASS`, `FAIL`, or `INCONCLUSIVE`, and retain replayable evidence. It includes six Python fixtures, candidate-generating and reviewer adapters, working-tree verification, Codex integration, and stored run and reviewer reporting.
 
 ## Phase 8: Reviewer-regression corpus
 
@@ -46,16 +46,6 @@ Measure whether an AI reviewer identifies the corpus's known regression without 
 - [ ] Validate executable artifacts by running them against the incorrect candidate and correct reference or baseline as appropriate.
 - [ ] Classify detection, executable detection, miss, false positive, and inconclusive independently.
 - [ ] Preserve prompt version, safe adapter metadata, artifacts, scorer output, and replay data.
-
-### Planned module layout
-
-```text
-src/patchbench/
-├── models.py
-├── reviewers.py
-├── review_scoring.py
-└── review_reporting.py
-```
 
 ### Exit criterion
 

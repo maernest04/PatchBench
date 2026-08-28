@@ -78,7 +78,15 @@ The command reconstructs the recorded environment and reruns the evaluation usin
 patchbench report
 ```
 
-The command aggregates stored candidate-evaluation results. It does not yet report reviewer-benchmark outcomes.
+The command aggregates stored candidate-evaluation results.
+
+### Report stored reviews
+
+```text
+patchbench review-report
+```
+
+The command aggregates stored reviewer outcomes overall and by task, and retains each review attempt in the output. Rates describe only the stored attempts; they do not make a general model-performance claim.
 
 ## Exit codes
 
@@ -89,8 +97,8 @@ The command aggregates stored candidate-evaluation results. It does not yet repo
 
 ## Output requirements
 
-`evaluate`, `verify-working-tree`, `codex-run`, `agent-evaluate`, `review-evaluate`, `show`, `replay`, and `report` support readable terminal output or `--format json`.
+`evaluate`, `verify-working-tree`, `codex-run`, `agent-evaluate`, `review-evaluate`, `show`, `replay`, `report`, and `review-report` support readable terminal output or `--format json`.
 
 ## Non-goals
 
-The current CLI does not yet include reviewer-benchmark commands, an interactive shell, web dashboard, agent-management commands, or remote execution commands.
+The current CLI does not yet include an interactive shell, web dashboard, agent-management commands, or remote execution commands.

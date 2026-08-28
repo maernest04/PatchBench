@@ -5,7 +5,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from patchbench.agents import AgentBudget, AgentConfigurationError, AgentExecutionError, CommandAgentAdapter
-from patchbench.benchmark import build_report
+from patchbench.benchmark import build_report, build_review_report
 from patchbench.codex import CodexRunError, run_codex
 from patchbench.models import AgentMetadata, Classification, EvaluationResult, ReviewClassification, ReviewResult, ReviewScore
 from patchbench.evaluator import evaluate
@@ -13,7 +13,7 @@ from patchbench.replay import replay
 from patchbench.reporter import render_json, render_review_json, render_review_text, render_stored_text, render_text
 from patchbench.review_scoring import score_finding
 from patchbench.reviewers import CommandReviewerAdapter, ReviewerBudget, ReviewerConfigurationError, ReviewerExecutionError
-from patchbench.storage import FilesystemReviewStore, FilesystemRunStore, RunNotFoundError
+from patchbench.storage import FilesystemReviewStore, FilesystemRunStore, ReviewStoreError, RunNotFoundError
 from patchbench.task_loader import TaskValidationError, load_task
 from patchbench.working_tree import WorkingTreeError, write_working_tree_patch
 
@@ -64,6 +64,9 @@ def main() -> int:
     report_parser = subcommands.add_parser("report")
     report_parser.add_argument("--format", choices=("text", "json"), default="text")
     report_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/runs"))
+    review_report_parser = subcommands.add_parser("review-report")
+    review_report_parser.add_argument("--format", choices=("text", "json"), default="text")
+    review_report_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/reviews"))
     arguments = parser.parse_args()
 
     run_store = FilesystemRunStore(arguments.artifacts_dir)
@@ -86,6 +89,14 @@ def main() -> int:
 
     if arguments.command == "report":
         report = build_report([stored_run.payload for stored_run in run_store.list_runs()])
+        print(json.dumps(report, sort_keys=True) if arguments.format == "json" else json.dumps(report, indent=2, sort_keys=True))
+        return 0
+
+    if arguments.command == "review-report":
+        try:
+            report = build_review_report(list(FilesystemReviewStore(arguments.artifacts_dir).list_reviews()))
+        except ReviewStoreError as error:
+            parser.error(str(error))
         print(json.dumps(report, sort_keys=True) if arguments.format == "json" else json.dumps(report, indent=2, sort_keys=True))
         return 0
 

@@ -1,12 +1,12 @@
 # PatchBench
 
-PatchBench is a benchmark for measuring whether AI reviewers can detect AI-authored code regressions that pass visible tests.
+PatchBench measures whether AI reviewers can detect AI-authored code regressions that pass visible tests.
 
-Rather than treating an LLM review as proof, PatchBench gives a reviewer agent a task, repository, public checks, and a plausible candidate patch. It then measures whether the reviewer identifies and exposes the patch's hidden behavioral regression through reproducible execution.
+Rather than treating an LLM review as proof, PatchBench gives a reviewer agent a repository, public task materials, and a plausible candidate patch. It deterministically scores the review against private ground truth established by hidden executable checks.
 
 ## Core question
 
-> Can an AI reviewer identify a behavioral regression that visible tests missed, and produce evidence that exposes it?
+> Can an AI reviewer identify a behavioral regression that visible tests missed?
 
 ## Scope
 
@@ -17,24 +17,24 @@ The first implementation will use a small set of Python and pytest fixtures so t
 ## How it works
 
 ```text
-Task + repository + public materials
-                |
-                v
-          AI coding agent
-                |
-                v
-          Candidate code change
-                |
-                v
-  Isolated, task-specific evaluator
-                |
-                v
- Evidence, result, and replay data
+Candidate patch + repository + public materials
+                    |
+                    v
+             AI reviewer
+                    |
+                    v
+          Structured finding
+                    |
+                    v
+Private ground truth + deterministic scorer
+                    |
+                    v
+   Stored evidence and benchmark report
 ```
 
 ## Benchmark direction
 
-The existing evaluator is the benchmark's execution engine. The next phase builds a curated corpus of plausible, visible-test-passing regressions and a controlled reviewer-agent experiment harness. PatchBench will compare visible tests, a text-only AI review, and an AI reviewer that produces executable verification evidence. It reports what reviewers catch, miss, and cannot evaluate—not an unsupported overall model ranking.
+The evaluator establishes each candidate's ground truth. The pilot corpus contains six plausible, visible-test-passing regressions and the reviewer harness supports structured findings from a public-only workspace. `patchbench review-report` aggregates stored reviewer outcomes; controlled repeated experiments and executable reviewer artifacts remain future work.
 
 ## Repository guide
 

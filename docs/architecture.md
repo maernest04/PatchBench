@@ -31,7 +31,7 @@ Public task + repository + candidate patch
        Fixed-budget reviewer-agent attempt
                     |
                     v
-Structured finding and optional verification artifact
+           Structured finding
                     |
                     v
   Deterministic scorer + hidden ground-truth evaluator
@@ -40,7 +40,7 @@ Structured finding and optional verification artifact
    Per-task outcome, evidence, and aggregate report
 ```
 
-The hidden evaluator decides candidate ground truth. The scorer decides whether the reviewer's evidence actually identified or exposed that known regression. The reviewer never receives hidden tests, reference patches, or prior hidden results.
+The hidden evaluator decides candidate ground truth. The scorer decides whether the reviewer's finding identifies that known regression. The reviewer never receives hidden tests, reference patches, or prior hidden results.
 
 ## Components
 
@@ -50,7 +50,7 @@ Loads versioned tasks and preserves the boundary between public agent materials 
 
 ### Reviewer adapter
 
-Optionally runs a reviewer agent under a fixed prompt, budget, and public workspace. The adapter returns structured findings and, where permitted, a verification artifact. Fixture findings remain valid baseline inputs for scorer tests.
+Runs a reviewer agent under a fixed budget in a public-only workspace. The current command adapter returns structured findings. Fixture findings remain valid baseline inputs for scorer tests.
 
 Future adapters may use provider credentials supplied through environment variables. Credentials must never be committed, logged, or stored in results.
 
@@ -66,9 +66,9 @@ Runs the task’s public and hidden checks, including acceptance, preservation, 
 
 Persists task metadata, candidate revision, checks, logs, seeds, observations, classifications, and replay data.
 
-### Reporter
+### Reporters
 
-Creates human-readable and machine-readable results while preserving separate dimensions instead of an opaque score.
+Creates human-readable and machine-readable candidate results. The benchmark reporter aggregates stored reviewer attempts overall and by task while retaining each raw outcome.
 
 ### Reviewer scorer
 
@@ -84,6 +84,8 @@ src/patchbench/
 ├── workspace.py
 ├── runner.py
 ├── evaluator.py
+├── benchmark.py
+├── reviewers.py
 ├── review_scoring.py
 ├── replay.py
 ├── reporter.py
@@ -95,8 +97,8 @@ src/patchbench/
 - `task_loader.py` loads public and hidden task metadata without exposing hidden files to agents.
 - `workspace.py`, `runner.py`, and `evaluator.py` create isolated candidate workspaces and establish ground truth.
 - `review_scoring.py` compares a reviewer finding with private task labels.
-- `agents.py` contains the current candidate-generating adapter; a reviewer adapter will be a separate public-only integration.
-- `storage/`, `replay.py`, and `reporter.py` persist and present reproducible evidence.
+- `agents.py` and `reviewers.py` contain public-only candidate-generation and reviewer integrations.
+- `benchmark.py`, `storage/`, `replay.py`, and `reporter.py` aggregate, persist, replay, and present reproducible evidence.
 
 New evaluator types must use the existing task loader, workspace manager, Docker runner, evidence model, reporter, and run store. They define observable execution, public and hidden boundaries, deterministic pass/fail conditions, and when an environment error becomes `INCONCLUSIVE`.
 

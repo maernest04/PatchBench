@@ -16,6 +16,10 @@ class RunNotFoundError(ValueError):
     pass
 
 
+class ReviewStoreError(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class StoredRun:
     run_id: str
@@ -120,6 +124,23 @@ class FilesystemReviewStore:
         }
         (review_directory / "result.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
         return stored_result
+
+    def list_reviews(self) -> tuple[dict, ...]:
+        if not self.root.is_dir():
+            return ()
+        reviews = []
+        for path in sorted(self.root.iterdir()):
+            result_path = path / "result.json"
+            if not path.is_dir() or not path.name.startswith("review-") or not result_path.is_file():
+                continue
+            try:
+                payload = json.loads(result_path.read_text())
+            except json.JSONDecodeError as error:
+                raise ReviewStoreError(f"review record is invalid: {path.name}") from error
+            if not isinstance(payload, dict):
+                raise ReviewStoreError(f"review record is invalid: {path.name}")
+            reviews.append(payload)
+        return tuple(reviews)
 
 
 def _sha256(path: Path) -> str:

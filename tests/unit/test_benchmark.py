@@ -1,4 +1,4 @@
-from patchbench.benchmark import build_report
+from patchbench.benchmark import build_report, build_review_report
 
 
 def test_reports_classifications_safety_and_reproducibility_separately():
@@ -39,3 +39,35 @@ def test_reports_classifications_safety_and_reproducibility_separately():
     assert summary["average_check_duration_seconds"] == 2.0
     assert summary["reproducibility_rate"] == 1.0
     assert summary["sources"] == {"agent": 1, "fixture": 1}
+
+
+def test_reports_reviewer_outcomes_by_task_and_attempt():
+    payloads = [
+        {
+            "review_id": "review-1",
+            "task": {"id": "task", "version": 1},
+            "score": "DETECTED",
+            "reason": "matching symbol",
+            "finding": {"category": "correctness"},
+            "duration_seconds": 2.0,
+            "created_at": "2026-08-28T00:00:00+00:00",
+        },
+        {
+            "review_id": "review-2",
+            "task": {"id": "other", "version": 1},
+            "score": "MISSED",
+            "reason": "no finding",
+            "finding": None,
+            "duration_seconds": None,
+            "created_at": "2026-08-28T00:01:00+00:00",
+        },
+    ]
+
+    report = build_review_report(payloads)
+
+    assert report["reviews"]["total_reviews"] == 2
+    assert report["reviews"]["outcomes"] == {"DETECTED": 1, "MISSED": 1}
+    assert report["reviews"]["detection_rate"] == 0.5
+    assert report["reviews"]["average_duration_seconds"] == 2.0
+    assert report["tasks"]["task@1"]["detection_rate"] == 1.0
+    assert report["attempts"][0]["review_id"] == "review-1"
