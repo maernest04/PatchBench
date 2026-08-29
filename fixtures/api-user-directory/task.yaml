@@ -9,6 +9,11 @@ constraints:
   memory_megabytes: 256
   cpu_cores: 1
 reviewer_ground_truth: hidden/reviewer.yaml
+candidates:
+  - path: candidates/correct.patch
+    kind: control
+  - path: candidates/incompatible.patch
+    kind: known_regression
 checks:
   - name: visible-name-lookup
     type: pytest

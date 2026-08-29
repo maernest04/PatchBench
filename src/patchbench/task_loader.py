@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from patchbench.models import Check, Constraints, ReviewerGroundTruth, Task
+from patchbench.models import Candidate, CandidateKind, Check, Constraints, ReviewerGroundTruth, Task
 
 
 class TaskValidationError(ValueError):
@@ -53,6 +53,7 @@ def load_task(task_directory: Path) -> Task:
     checks = tuple(_load_check(task_directory, value, index) for index, value in enumerate(raw_checks))
     if {check.visibility for check in checks} != {"public", "hidden"}:
         raise TaskValidationError("checks must include public and hidden visibility")
+    candidates = _load_candidates(task_directory, raw)
     reviewer_ground_truth = _load_reviewer_ground_truth(task_directory, raw)
 
     return Task(
@@ -68,8 +69,37 @@ def load_task(task_directory: Path) -> Task:
             cpu_cores=cpu_cores,
         ),
         checks=checks,
+        candidates=candidates,
         reviewer_ground_truth=reviewer_ground_truth,
     )
+
+
+def _load_candidates(task_directory: Path, raw: dict) -> tuple[Candidate, ...]:
+    values = raw.get("candidates")
+    if not isinstance(values, list) or not values:
+        raise TaskValidationError("candidates must be a non-empty list")
+    candidates = []
+    for index, value in enumerate(values):
+        if not isinstance(value, dict):
+            raise TaskValidationError(f"candidates[{index}] must be an object")
+        path_value = _require_string(value, "path")
+        path = Path(path_value)
+        if path.is_absolute() or ".." in path.parts:
+            raise TaskValidationError(f"candidates[{index}].path has an unsafe path")
+        patch = task_directory / path
+        if not patch.is_file():
+            raise TaskValidationError(f"candidates[{index}].path does not exist: {patch}")
+        kind_value = _require_string(value, "kind")
+        try:
+            kind = CandidateKind(kind_value)
+        except ValueError as error:
+            raise TaskValidationError(f"candidates[{index}].kind is invalid: {kind_value}") from error
+        candidates.append(Candidate(patch=patch, kind=kind))
+    if {candidate.kind for candidate in candidates} != {CandidateKind.CONTROL, CandidateKind.KNOWN_REGRESSION}:
+        raise TaskValidationError("candidates must include one control and one known_regression")
+    if len({candidate.patch for candidate in candidates}) != len(candidates):
+        raise TaskValidationError("candidates must not repeat a patch")
+    return tuple(candidates)
 
 
 def _load_reviewer_ground_truth(task_directory: Path, raw: dict) -> ReviewerGroundTruth | None:

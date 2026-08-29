@@ -39,6 +39,7 @@ def test_review_evaluate_scores_and_stores_finding(tmp_path, monkeypatch, capsys
     payload = json.loads(capsys.readouterr().out)
 
     assert payload["score"] == "DETECTED"
+    assert payload["candidate_kind"] == "known_regression"
     assert (tmp_path / "reviews" / payload["review_id"] / "result.json").is_file()
 
 
@@ -51,6 +52,7 @@ def test_review_report_aggregates_stored_reviews(tmp_path, monkeypatch, capsys):
             {
                 "review_id": "review-1",
                 "task": {"id": "cache-invalidation-v1", "version": 1},
+                "candidate_kind": "known_regression",
                 "score": "DETECTED",
                 "reason": "finding matches ground-truth symbol",
                 "finding": None,

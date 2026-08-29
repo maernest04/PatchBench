@@ -32,7 +32,7 @@ def build_review_report(payloads: list[dict]) -> dict:
         "attempts": [_review_attempt(payload) for payload in payloads],
         "limitations": [
             "Rates describe only stored reviewer attempts and are not a general model ranking.",
-            "Correct control patches are not yet distinguished from known-regression patches in stored review records.",
+            "Unlabeled historical review records are excluded from control and known-regression rates.",
         ],
     }
 
@@ -70,9 +70,13 @@ def _review_summary(payloads: list[dict]) -> dict:
     return {
         "total_reviews": total,
         "outcomes": dict(scores),
-        "detection_rate": _rate(scores["DETECTED"], total),
-        "miss_rate": _rate(scores["MISSED"], total),
-        "false_positive_rate": _rate(scores["FALSE_POSITIVE"], total),
+        "known_regression_reviews": len([payload for payload in payloads if payload.get("candidate_kind") == "known_regression"]),
+        "control_reviews": len([payload for payload in payloads if payload.get("candidate_kind") == "control"]),
+        "unlabeled_reviews": len([payload for payload in payloads if payload.get("candidate_kind") is None]),
+        "detection_rate": _review_rate(payloads, "known_regression", "DETECTED"),
+        "miss_rate": _review_rate(payloads, "known_regression", "MISSED"),
+        "false_positive_rate": _review_rate(payloads, "control", "FALSE_POSITIVE"),
+        "correct_rejection_rate": _review_rate(payloads, "control", "CORRECT_REJECTION"),
         "inconclusive_rate": _rate(scores["INCONCLUSIVE"], total),
         "average_duration_seconds": sum(durations) / len(durations) if durations else None,
     }
@@ -82,12 +86,18 @@ def _review_attempt(payload: dict) -> dict:
     return {
         "review_id": payload["review_id"],
         "task": payload["task"],
+        "candidate_kind": payload.get("candidate_kind"),
         "score": payload["score"],
         "reason": payload["reason"],
         "finding": payload["finding"],
         "duration_seconds": payload["duration_seconds"],
         "created_at": payload["created_at"],
     }
+
+
+def _review_rate(payloads: list[dict], candidate_kind: str, score: str) -> float:
+    matching = [payload for payload in payloads if payload.get("candidate_kind") == candidate_kind]
+    return _rate(sum(payload["score"] == score for payload in matching), len(matching))
 
 
 def _has_failed_check(payload: dict, visibility: str | None = None, category: str | None = None) -> bool:

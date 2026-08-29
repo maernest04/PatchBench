@@ -113,9 +113,10 @@ def main() -> int:
             max_cost_usd=arguments.max_cost_usd,
         )
         try:
+            candidate_kind = _candidate_kind(task, arguments.patch)
             with tempfile.TemporaryDirectory(prefix="patchbench-review-output-") as temporary_directory:
                 attempt = CommandReviewerAdapter.from_environment().review(task, arguments.patch, Path(temporary_directory), budget)
-            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding), attempt.finding, attempt.duration_seconds)
+            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding, candidate_kind), attempt.finding, attempt.duration_seconds, candidate_kind)
         except (ReviewerConfigurationError, ReviewerExecutionError, ValueError) as error:
             result = ReviewResult(
                 task,
@@ -205,6 +206,14 @@ def _evaluate_working_tree(task, run_store):
                 reason=str(error),
             )
         return run_store.save(evaluate(task, patch))
+
+
+def _candidate_kind(task, patch: Path):
+    patch_path = patch.resolve()
+    for candidate in task.candidates:
+        if candidate.patch.resolve() == patch_path:
+            return candidate.kind
+    raise ValueError(f"patch is not a registered candidate: {patch}")
 
 
 if __name__ == "__main__":

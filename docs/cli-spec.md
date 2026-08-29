@@ -50,9 +50,9 @@ The command must write a unified diff to `PATCHBENCH_AGENT_OUTPUT_PATCH`. PatchB
 PATCHBENCH_REVIEWER_COMMAND="your-reviewer-command" patchbench review-evaluate --task <task-directory> --patch <candidate.patch>
 ```
 
-The command applies the candidate patch in a temporary reviewer workspace, then copies only the patched repository, public task materials, and candidate patch. The reviewer receives `PATCHBENCH_REVIEWER_REPOSITORY`, `PATCHBENCH_REVIEWER_PUBLIC_DIR`, `PATCHBENCH_REVIEWER_PATCH`, `PATCHBENCH_REVIEWER_OUTPUT`, and its declared tool, token, and cost budgets.
+The command accepts a task-registered candidate patch, applies it in a temporary reviewer workspace, then copies only the patched repository, public task materials, and candidate patch. The reviewer receives `PATCHBENCH_REVIEWER_REPOSITORY`, `PATCHBENCH_REVIEWER_PUBLIC_DIR`, `PATCHBENCH_REVIEWER_PATCH`, `PATCHBENCH_REVIEWER_OUTPUT`, and its declared tool, token, and cost budgets.
 
-The reviewer writes either `null` or a JSON finding containing `category`, `affected_paths`, `affected_symbols`, and `rationale`. PatchBench stores and prints `DETECTED`, `MISSED`, `FALSE_POSITIVE`, or `INCONCLUSIVE`.
+The reviewer writes either `null` or a JSON finding containing `category`, `affected_paths`, `affected_symbols`, and `rationale`. PatchBench stores and prints `DETECTED`, `MISSED`, `FALSE_POSITIVE`, `CORRECT_REJECTION`, or `INCONCLUSIVE`.
 
 Use the included Codex bridge by setting `PATCHBENCH_REVIEWER_COMMAND` to `python3` followed by the absolute path to `scripts/patchbench_codex_reviewer.py`. The bridge uses `codex exec` with a JSON schema and writes only Codex's final structured response to the reviewer output path.
 

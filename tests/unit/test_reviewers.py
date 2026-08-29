@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from patchbench.models import ReviewClassification
+from patchbench.models import CandidateKind, ReviewClassification
 from patchbench.review_scoring import score_finding
 from patchbench.reviewers import CommandReviewerAdapter, ReviewerBudget, ReviewerExecutionError
 from patchbench.task_loader import load_task
@@ -38,7 +38,7 @@ def test_reviewer_receives_only_public_material(tmp_path):
     )
 
     assert attempt.finding is not None
-    assert score_finding(task, attempt.finding).classification is ReviewClassification.DETECTED
+    assert score_finding(task, attempt.finding, CandidateKind.KNOWN_REGRESSION).classification is ReviewClassification.DETECTED
 
 
 def test_reviewer_can_report_no_finding(tmp_path):

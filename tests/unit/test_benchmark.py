@@ -8,6 +8,7 @@ def test_reports_classifications_safety_and_reproducibility_separately():
             "replay_of": None,
             "classification": "PASS",
             "task": {"id": "task", "version": 1},
+            "candidate_kind": "known_regression",
             "agent": {"adapter": "command"},
             "checks": [{"visibility": "public", "category": "correctness", "returncode": 0, "duration_seconds": 1.0}],
         },
@@ -46,6 +47,7 @@ def test_reports_reviewer_outcomes_by_task_and_attempt():
         {
             "review_id": "review-1",
             "task": {"id": "task", "version": 1},
+            "candidate_kind": "known_regression",
             "score": "DETECTED",
             "reason": "matching symbol",
             "finding": {"category": "correctness"},
@@ -55,7 +57,8 @@ def test_reports_reviewer_outcomes_by_task_and_attempt():
         {
             "review_id": "review-2",
             "task": {"id": "other", "version": 1},
-            "score": "MISSED",
+            "candidate_kind": "control",
+            "score": "CORRECT_REJECTION",
             "reason": "no finding",
             "finding": None,
             "duration_seconds": None,
@@ -66,8 +69,9 @@ def test_reports_reviewer_outcomes_by_task_and_attempt():
     report = build_review_report(payloads)
 
     assert report["reviews"]["total_reviews"] == 2
-    assert report["reviews"]["outcomes"] == {"DETECTED": 1, "MISSED": 1}
-    assert report["reviews"]["detection_rate"] == 0.5
+    assert report["reviews"]["outcomes"] == {"DETECTED": 1, "CORRECT_REJECTION": 1}
+    assert report["reviews"]["detection_rate"] == 1.0
+    assert report["reviews"]["correct_rejection_rate"] == 1.0
     assert report["reviews"]["average_duration_seconds"] == 2.0
     assert report["tasks"]["task@1"]["detection_rate"] == 1.0
     assert report["attempts"][0]["review_id"] == "review-1"

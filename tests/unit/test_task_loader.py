@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from patchbench.models import CandidateKind
 from patchbench.task_loader import TaskValidationError, load_task
 
 
@@ -17,6 +18,10 @@ def test_loads_cache_invalidation_task():
     assert task.reviewer_ground_truth is not None
     assert task.reviewer_ground_truth.fault_id == "stale-cache-after-delete"
     assert task.reviewer_ground_truth.affected_symbols == ("UserStore.delete_user",)
+    assert [(candidate.patch.name, candidate.kind) for candidate in task.candidates] == [
+        ("correct.patch", CandidateKind.CONTROL),
+        ("stale-cache.patch", CandidateKind.KNOWN_REGRESSION),
+    ]
 
 
 def test_rejects_malformed_task_contract(tmp_path):

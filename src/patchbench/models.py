@@ -13,7 +13,13 @@ class ReviewClassification(StrEnum):
     DETECTED = "DETECTED"
     MISSED = "MISSED"
     FALSE_POSITIVE = "FALSE_POSITIVE"
+    CORRECT_REJECTION = "CORRECT_REJECTION"
     INCONCLUSIVE = "INCONCLUSIVE"
+
+
+class CandidateKind(StrEnum):
+    CONTROL = "control"
+    KNOWN_REGRESSION = "known_regression"
 
 
 @dataclass(frozen=True)
@@ -46,7 +52,14 @@ class Task:
     dockerfile: Path | None
     constraints: Constraints
     checks: tuple[Check, ...]
+    candidates: tuple["Candidate", ...] = ()
     reviewer_ground_truth: "ReviewerGroundTruth | None" = None
+
+
+@dataclass(frozen=True)
+class Candidate:
+    patch: Path
+    kind: CandidateKind
 
 
 @dataclass(frozen=True)
@@ -78,6 +91,7 @@ class ReviewResult:
     score: ReviewScore
     finding: ReviewerFinding | None
     duration_seconds: float | None
+    candidate_kind: CandidateKind | None = None
     review_id: str | None = None
 
 

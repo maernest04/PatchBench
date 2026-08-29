@@ -6,9 +6,9 @@ Can an AI reviewer detect and expose a behavioral regression in a plausible cand
 
 ## Task design
 
-Each versioned task contains a small reproducible repository, public task request and tests, a plausible incorrect candidate patch, a correct reference or verified baseline, and a hidden executable contract.
+Each versioned task contains a small reproducible repository, public task request and tests, a registered known-regression patch, a registered control patch, and a hidden executable contract.
 
-The incorrect candidate must pass all public checks and fail the hidden contract. The correct reference or baseline must pass the hidden contract. Each task has one primary regression, private ground-truth fault labels, candidate provenance, and no dependency on secrets, external network access, or unmanaged services.
+The known-regression candidate must pass all public checks and fail the hidden contract. The control candidate must pass public and hidden checks. Each task has one primary regression, private ground-truth fault labels, candidate provenance, and no dependency on secrets, external network access, or unmanaged services.
 
 The first corpus will contain 15–25 Python tasks across state/lifecycle behavior, public API compatibility, CLI/filesystem behavior, security/policy, refactor preservation, and reliability/error paths. The pilot now contains one task from each category.
 

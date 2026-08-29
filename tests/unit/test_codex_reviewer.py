@@ -3,7 +3,7 @@ import stat
 import sys
 from pathlib import Path
 
-from patchbench.models import ReviewClassification
+from patchbench.models import CandidateKind, ReviewClassification
 from patchbench.review_scoring import score_finding
 from patchbench.reviewers import CommandReviewerAdapter, ReviewerBudget
 from patchbench.task_loader import load_task
@@ -37,7 +37,7 @@ def test_codex_reviewer_writes_schema_output(tmp_path, monkeypatch):
     )
 
     assert attempt.finding is not None
-    assert score_finding(task, attempt.finding).classification is ReviewClassification.DETECTED
+    assert score_finding(task, attempt.finding, CandidateKind.KNOWN_REGRESSION).classification is ReviewClassification.DETECTED
 
 
 def test_codex_reviewer_translates_no_finding(tmp_path, monkeypatch):

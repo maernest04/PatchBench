@@ -18,7 +18,7 @@ fixtures/<task-id>/
 - `repository/`: initial codebase.
 - `public/`: task description and any tests the agent may inspect.
 - `hidden/`: acceptance, preservation, policy, or scenario checks visible only to PatchBench.
-- `candidates/`: known-good and known-bad patches used to validate the evaluator. These are never exposed to an evaluated agent.
+- `candidates/`: registered control and known-regression patches used to validate the evaluator. These are never exposed to an evaluated agent.
 
 ## Required task fields
 
@@ -37,6 +37,12 @@ runtime:
   dockerfile: Dockerfile
 
 reviewer_ground_truth: hidden/reviewer.yaml
+
+candidates:
+  - path: candidates/correct.patch
+    kind: control
+  - path: candidates/stale-cache.patch
+    kind: known_regression
 
 checks:
   - type: pytest
@@ -89,4 +95,4 @@ affected_symbols:
 
 ## Candidate rules
 
-V1 accepts a unified diff. The evaluator applies it only to a temporary candidate workspace. A future agent adapter may generate the same diff, but it uses the identical evaluation path.
+Each task registers one `control` patch that passes public and hidden checks and one `known_regression` patch that passes public checks but fails a hidden contract. PatchBench only calculates reviewer recall and false-positive rates for registered candidates. The evaluator applies each unified diff only to a temporary candidate workspace.

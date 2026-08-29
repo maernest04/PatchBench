@@ -1,7 +1,11 @@
-from patchbench.models import ReviewClassification, ReviewerFinding, ReviewScore, Task
+from patchbench.models import CandidateKind, ReviewClassification, ReviewerFinding, ReviewScore, Task
 
 
-def score_finding(task: Task, finding: ReviewerFinding | None) -> ReviewScore:
+def score_finding(task: Task, finding: ReviewerFinding | None, candidate_kind: CandidateKind) -> ReviewScore:
+    if candidate_kind is CandidateKind.CONTROL:
+        if finding is None:
+            return ReviewScore(classification=ReviewClassification.CORRECT_REJECTION, reason="reviewer reported no finding for control")
+        return ReviewScore(classification=ReviewClassification.FALSE_POSITIVE, reason="reviewer reported a finding for control")
     ground_truth = task.reviewer_ground_truth
     if ground_truth is None:
         raise ValueError(f"task has no reviewer ground truth: {task.identifier}")
