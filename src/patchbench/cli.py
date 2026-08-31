@@ -9,6 +9,7 @@ from patchbench.benchmark import build_report, build_review_report
 from patchbench.codex import CodexRunError, run_codex
 from patchbench.models import AgentMetadata, Classification, EvaluationResult, ReviewClassification, ReviewResult, ReviewScore
 from patchbench.evaluator import evaluate
+from patchbench.experiments import ExperimentValidationError, load_experiment
 from patchbench.replay import replay
 from patchbench.reporter import render_json, render_review_json, render_review_text, render_stored_text, render_text
 from patchbench.review_scoring import score_finding
@@ -53,6 +54,7 @@ def main() -> int:
     reviewer_parser.add_argument("--max-tool-calls", type=int, default=50)
     reviewer_parser.add_argument("--max-tokens", type=int, default=100000)
     reviewer_parser.add_argument("--max-cost-usd", type=float, default=10.0)
+    reviewer_parser.add_argument("--experiment", type=Path)
     show_parser = subcommands.add_parser("show")
     show_parser.add_argument("run_id")
     show_parser.add_argument("--format", choices=("text", "json"), default="text")
@@ -67,6 +69,7 @@ def main() -> int:
     review_report_parser = subcommands.add_parser("review-report")
     review_report_parser.add_argument("--format", choices=("text", "json"), default="text")
     review_report_parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts/reviews"))
+    review_report_parser.add_argument("--experiment-id")
     arguments = parser.parse_args()
 
     run_store = FilesystemRunStore(arguments.artifacts_dir)
@@ -94,9 +97,12 @@ def main() -> int:
 
     if arguments.command == "review-report":
         try:
-            report = build_review_report(list(FilesystemReviewStore(arguments.artifacts_dir).list_reviews()))
+            payloads = list(FilesystemReviewStore(arguments.artifacts_dir).list_reviews())
         except ReviewStoreError as error:
             parser.error(str(error))
+        if arguments.experiment_id:
+            payloads = [payload for payload in payloads if payload.get("experiment_id") == arguments.experiment_id]
+        report = build_review_report(payloads)
         print(json.dumps(report, sort_keys=True) if arguments.format == "json" else json.dumps(report, indent=2, sort_keys=True))
         return 0
 
@@ -106,17 +112,33 @@ def main() -> int:
         parser.error(str(error))
 
     if arguments.command == "review-evaluate":
+        experiment = None
+        if arguments.experiment:
+            try:
+                experiment = load_experiment(arguments.experiment)
+            except ExperimentValidationError as error:
+                parser.error(str(error))
+            if f"{task.identifier}@{task.version}" not in experiment.task_keys:
+                parser.error(f"task is not registered in experiment: {task.identifier}@{task.version}")
+            if experiment.reviewer_adapter != "codex-cli":
+                parser.error(f"unsupported experiment reviewer adapter: {experiment.reviewer_adapter}")
         budget = ReviewerBudget(
-            timeout_seconds=arguments.timeout_seconds,
-            max_tool_calls=arguments.max_tool_calls,
-            max_tokens=arguments.max_tokens,
-            max_cost_usd=arguments.max_cost_usd,
+            timeout_seconds=experiment.timeout_seconds if experiment else arguments.timeout_seconds,
+            max_tool_calls=experiment.max_tool_calls if experiment else arguments.max_tool_calls,
+            max_tokens=experiment.max_tokens if experiment else arguments.max_tokens,
+            max_cost_usd=experiment.max_cost_usd if experiment else arguments.max_cost_usd,
         )
         try:
             candidate_kind = _candidate_kind(task, arguments.patch)
             with tempfile.TemporaryDirectory(prefix="patchbench-review-output-") as temporary_directory:
-                attempt = CommandReviewerAdapter.from_environment().review(task, arguments.patch, Path(temporary_directory), budget)
-            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding, candidate_kind), attempt.finding, attempt.duration_seconds, candidate_kind)
+                adapter = CommandReviewerAdapter.from_environment()
+                if experiment:
+                    adapter = CommandReviewerAdapter(
+                        adapter.command,
+                        {"PATCHBENCH_REVIEWER_MODEL": experiment.model, "PATCHBENCH_REVIEWER_PROMPT_VERSION": experiment.prompt_version},
+                    )
+                attempt = adapter.review(task, arguments.patch, Path(temporary_directory), budget)
+            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding, candidate_kind), attempt.finding, attempt.duration_seconds, candidate_kind, experiment.identifier if experiment else None)
         except (ReviewerConfigurationError, ReviewerExecutionError, ValueError) as error:
             result = ReviewResult(
                 task,

@@ -40,8 +40,9 @@ class ReviewerAdapter(Protocol):
 
 
 class CommandReviewerAdapter:
-    def __init__(self, command: tuple[str, ...]):
+    def __init__(self, command: tuple[str, ...], environment: dict[str, str] | None = None):
         self.command = command
+        self.environment = environment or {}
 
     @classmethod
     def from_environment(cls) -> "CommandReviewerAdapter":
@@ -65,7 +66,7 @@ class CommandReviewerAdapter:
                         shutil.copytree(public_directory, reviewer_root / "public")
                     candidate_patch = reviewer_root / "candidate.patch"
                     shutil.copy2(patch, candidate_patch)
-                    environment = os.environ | {
+                    environment = os.environ | self.environment | {
                         "PATCHBENCH_REVIEWER_REPOSITORY": str(repository),
                         "PATCHBENCH_REVIEWER_PUBLIC_DIR": str(reviewer_root / "public"),
                         "PATCHBENCH_REVIEWER_PATCH": str(candidate_patch),

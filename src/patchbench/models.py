@@ -92,6 +92,7 @@ class ReviewResult:
     finding: ReviewerFinding | None
     duration_seconds: float | None
     candidate_kind: CandidateKind | None = None
+    experiment_id: str | None = None
     review_id: str | None = None
 
 

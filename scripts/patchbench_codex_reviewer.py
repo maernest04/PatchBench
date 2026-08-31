@@ -10,6 +10,7 @@ reviewer_root = repository.parent
 public_directory = Path(os.environ["PATCHBENCH_REVIEWER_PUBLIC_DIR"])
 candidate_patch = Path(os.environ["PATCHBENCH_REVIEWER_PATCH"])
 output_path = Path(os.environ["PATCHBENCH_REVIEWER_OUTPUT"])
+model = os.environ.get("PATCHBENCH_REVIEWER_MODEL")
 schema_path = Path(__file__).resolve().parents[1] / "schemas" / "codex-reviewer-output.schema.json"
 prompt = (
     "Review the candidate code change without modifying files. "
@@ -31,8 +32,9 @@ result = subprocess.run(
         str(schema_path),
         "-o",
         str(output_path),
-        prompt,
-    ],
+    ]
+    + (["--model", model] if model else [])
+    + [prompt],
     check=False,
 )
 if result.returncode != 0:

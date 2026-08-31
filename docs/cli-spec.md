@@ -47,7 +47,7 @@ The command must write a unified diff to `PATCHBENCH_AGENT_OUTPUT_PATCH`. PatchB
 ## `patchbench review-evaluate`
 
 ```text
-PATCHBENCH_REVIEWER_COMMAND="your-reviewer-command" patchbench review-evaluate --task <task-directory> --patch <candidate.patch>
+PATCHBENCH_REVIEWER_COMMAND="your-reviewer-command" patchbench review-evaluate --task <task-directory> --patch <candidate.patch> --experiment <experiment.yaml>
 ```
 
 The command accepts a task-registered candidate patch, applies it in a temporary reviewer workspace, then copies only the patched repository, public task materials, and candidate patch. The reviewer receives `PATCHBENCH_REVIEWER_REPOSITORY`, `PATCHBENCH_REVIEWER_PUBLIC_DIR`, `PATCHBENCH_REVIEWER_PATCH`, `PATCHBENCH_REVIEWER_OUTPUT`, and its declared tool, token, and cost budgets.
@@ -55,6 +55,8 @@ The command accepts a task-registered candidate patch, applies it in a temporary
 The reviewer writes either `null` or a JSON finding containing `category`, `affected_paths`, `affected_symbols`, and `rationale`. PatchBench stores and prints `DETECTED`, `MISSED`, `FALSE_POSITIVE`, `CORRECT_REJECTION`, or `INCONCLUSIVE`.
 
 Use the included Codex bridge by setting `PATCHBENCH_REVIEWER_COMMAND` to `python3` followed by the absolute path to `scripts/patchbench_codex_reviewer.py`. The bridge uses `codex exec` with a JSON schema and writes only Codex's final structured response to the reviewer output path.
+
+When `--experiment` is supplied, its task list, reviewer adapter, model, prompt version, and budgets are validated and stored with the review. Each immutable manifest names one exact pilot configuration.
 
 ### Inspect a stored run
 
@@ -87,6 +89,8 @@ patchbench review-report
 ```
 
 The command aggregates stored reviewer outcomes overall and by task, and retains each review attempt in the output. Rates describe only the stored attempts; they do not make a general model-performance claim.
+
+Use `--experiment-id <id>` to report only the attempts from one frozen experiment.
 
 ## Exit codes
 

@@ -72,3 +72,45 @@ def test_review_report_aggregates_stored_reviews(tmp_path, monkeypatch, capsys):
 
     assert payload["reviews"]["detection_rate"] == 1.0
     assert payload["tasks"]["cache-invalidation-v1@1"]["total_reviews"] == 1
+
+
+def test_review_evaluate_stores_experiment_metadata(tmp_path, monkeypatch, capsys):
+    script = tmp_path / "reviewer.py"
+    script.write_text(
+        "\n".join(
+            [
+                "import json",
+                "import os",
+                "from pathlib import Path",
+                "assert os.environ['PATCHBENCH_REVIEWER_MODEL'] == 'gpt-5.6-terra'",
+                "assert os.environ['PATCHBENCH_REVIEWER_PROMPT_VERSION'] == 'codex-reviewer-v1'",
+                "Path(os.environ['PATCHBENCH_REVIEWER_OUTPUT']).write_text('null')",
+            ]
+        )
+        + "\n"
+    )
+    monkeypatch.setenv("PATCHBENCH_REVIEWER_COMMAND", f"{sys.executable} {script}")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "patchbench",
+            "review-evaluate",
+            "--task",
+            "fixtures/cache-invalidation",
+            "--patch",
+            "fixtures/cache-invalidation/candidates/correct.patch",
+            "--experiment",
+            "experiments/codex-pilot-v1-terra.yaml",
+            "--artifacts-dir",
+            str(tmp_path / "reviews"),
+            "--format",
+            "json",
+        ],
+    )
+
+    assert main() == 0
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["experiment_id"] == "codex-pilot-v1-terra"
+    assert payload["score"] == "CORRECT_REJECTION"

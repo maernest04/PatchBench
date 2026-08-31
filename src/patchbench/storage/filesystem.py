@@ -116,6 +116,7 @@ class FilesystemReviewStore:
             "review_id": review_id,
             "task": {"id": stored_result.task.identifier, "version": stored_result.task.version},
             "candidate_kind": stored_result.candidate_kind,
+            "experiment_id": stored_result.experiment_id,
             "patch_sha256": _sha256(stored_result.patch) if stored_result.patch.is_file() else None,
             "score": stored_result.score.classification,
             "reason": stored_result.score.reason,

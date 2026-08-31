@@ -61,6 +61,7 @@ Produce transparent evidence of what reviewer workflows add beyond public tests 
 ### Checklist
 
 - [ ] Freeze a fixed reviewer prompt, model configuration, tools, budgets, and attempt count before each experiment.
+- [x] Add a versioned pilot experiment manifest that records corpus, reviewer model, prompt version, and budgets.
 - [ ] Run a public-test baseline, text-only reviewer baseline, and executable-evidence reviewer workflow over the frozen corpus.
 - [ ] Run at least three independent attempts per task and workflow where cost permits.
 - [ ] Report detection, executable-detection, false-positive, inconclusive, runtime, cost, and replay metrics by category and task.

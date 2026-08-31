@@ -87,6 +87,7 @@ def _review_attempt(payload: dict) -> dict:
         "review_id": payload["review_id"],
         "task": payload["task"],
         "candidate_kind": payload.get("candidate_kind"),
+        "experiment_id": payload.get("experiment_id"),
         "score": payload["score"],
         "reason": payload["reason"],
         "finding": payload["finding"],
