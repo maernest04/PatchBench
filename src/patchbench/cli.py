@@ -55,6 +55,7 @@ def main() -> int:
     reviewer_parser.add_argument("--max-tokens", type=int, default=100000)
     reviewer_parser.add_argument("--max-cost-usd", type=float, default=10.0)
     reviewer_parser.add_argument("--experiment", type=Path)
+    reviewer_parser.add_argument("--attempt", type=int)
     show_parser = subcommands.add_parser("show")
     show_parser.add_argument("run_id")
     show_parser.add_argument("--format", choices=("text", "json"), default="text")
@@ -122,6 +123,8 @@ def main() -> int:
                 parser.error(f"task is not registered in experiment: {task.identifier}@{task.version}")
             if experiment.reviewer_adapter != "codex-cli":
                 parser.error(f"unsupported experiment reviewer adapter: {experiment.reviewer_adapter}")
+            if arguments.attempt is None or arguments.attempt < 1 or arguments.attempt > experiment.attempt_count:
+                parser.error(f"--attempt must be between 1 and {experiment.attempt_count}")
         budget = ReviewerBudget(
             timeout_seconds=experiment.timeout_seconds if experiment else arguments.timeout_seconds,
             max_tool_calls=experiment.max_tool_calls if experiment else arguments.max_tool_calls,
@@ -138,7 +141,7 @@ def main() -> int:
                         {"PATCHBENCH_REVIEWER_MODEL": experiment.model, "PATCHBENCH_REVIEWER_PROMPT_VERSION": experiment.prompt_version},
                     )
                 attempt = adapter.review(task, arguments.patch, Path(temporary_directory), budget)
-            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding, candidate_kind), attempt.finding, attempt.duration_seconds, candidate_kind, experiment.identifier if experiment else None)
+            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding, candidate_kind), attempt.finding, attempt.duration_seconds, candidate_kind, experiment.identifier if experiment else None, arguments.attempt if experiment else None)
         except (ReviewerConfigurationError, ReviewerExecutionError, ValueError) as error:
             result = ReviewResult(
                 task,
@@ -147,7 +150,10 @@ def main() -> int:
                 None,
                 None,
             )
-        result = FilesystemReviewStore(arguments.artifacts_dir).save(result)
+        try:
+            result = FilesystemReviewStore(arguments.artifacts_dir).save(result)
+        except ReviewStoreError as error:
+            parser.error(str(error))
         print(render_review_json(result) if arguments.format == "json" else render_review_text(result))
         return 3 if result.score.classification is ReviewClassification.INCONCLUSIVE else 0
     if arguments.command == "verify-working-tree":

@@ -101,7 +101,9 @@ def test_review_evaluate_stores_experiment_metadata(tmp_path, monkeypatch, capsy
             "--patch",
             "fixtures/cache-invalidation/candidates/correct.patch",
             "--experiment",
-            "experiments/codex-pilot-v1-terra.yaml",
+            "experiments/codex-pilot-v2-terra.yaml",
+            "--attempt",
+            "1",
             "--artifacts-dir",
             str(tmp_path / "reviews"),
             "--format",
@@ -112,5 +114,5 @@ def test_review_evaluate_stores_experiment_metadata(tmp_path, monkeypatch, capsy
     assert main() == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["experiment_id"] == "codex-pilot-v1-terra"
+    assert payload["experiment_id"] == "codex-pilot-v2-terra"
     assert payload["score"] == "CORRECT_REJECTION"

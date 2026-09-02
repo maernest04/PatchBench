@@ -17,6 +17,7 @@ Create a curated corpus of plausible incorrect patches that pass visible tests b
 - [x] Build a six-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
 - [ ] Record per-task author rationale, candidate plausibility review, deterministic environment, and hidden-evaluator evidence without leaking the fault to reviewer agents.
 - [x] Register control and known-regression candidates for each pilot task.
+- [x] Adjudicate the pilot's control-patch false positive and version the clarified public task contract.
 - [ ] Validate each pilot task against its incorrect candidate, correct reference, and at least one irrelevant reviewer finding.
 
 ### Phase 8B: Corpus expansion and quality

@@ -106,10 +106,13 @@ class FilesystemReviewStore:
         self.root = root
 
     def save(self, result: ReviewResult) -> ReviewResult:
-        review_id = f"review-{uuid4().hex[:12]}"
+        review_id = _review_id(result)
         stored_result = replace(result, review_id=review_id)
         review_directory = self.root / review_id
-        review_directory.mkdir(parents=True)
+        try:
+            review_directory.mkdir(parents=True)
+        except FileExistsError as error:
+            raise ReviewStoreError(f"review attempt already exists: {review_id}") from error
         if stored_result.patch.is_file():
             shutil.copy2(stored_result.patch, review_directory / "candidate.patch")
         payload = {
@@ -117,6 +120,7 @@ class FilesystemReviewStore:
             "task": {"id": stored_result.task.identifier, "version": stored_result.task.version},
             "candidate_kind": stored_result.candidate_kind,
             "experiment_id": stored_result.experiment_id,
+            "attempt_number": stored_result.attempt_number,
             "patch_sha256": _sha256(stored_result.patch) if stored_result.patch.is_file() else None,
             "score": stored_result.score.classification,
             "reason": stored_result.score.reason,
@@ -162,3 +166,9 @@ def _finding_payload(result: ReviewResult) -> dict | None:
         "affected_symbols": result.finding.affected_symbols,
         "rationale": result.finding.rationale,
     }
+
+
+def _review_id(result: ReviewResult) -> str:
+    if result.experiment_id and result.candidate_kind and result.attempt_number:
+        return f"review-{result.experiment_id}-{result.task.identifier}-{result.candidate_kind}-{result.attempt_number}"
+    return f"review-{uuid4().hex[:12]}"

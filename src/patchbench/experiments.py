@@ -19,6 +19,7 @@ class Experiment:
     max_tool_calls: int
     max_tokens: int
     max_cost_usd: float
+    attempt_count: int
 
 
 def load_experiment(path: Path) -> Experiment:
@@ -45,6 +46,7 @@ def load_experiment(path: Path) -> Experiment:
         max_tool_calls=_require_positive_int(budget, "max_tool_calls"),
         max_tokens=_require_positive_int(budget, "max_tokens"),
         max_cost_usd=_require_positive_number(budget, "max_cost_usd"),
+        attempt_count=_require_positive_int(raw, "attempt_count"),
     )
 
 

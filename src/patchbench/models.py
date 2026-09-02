@@ -93,6 +93,7 @@ class ReviewResult:
     duration_seconds: float | None
     candidate_kind: CandidateKind | None = None
     experiment_id: str | None = None
+    attempt_number: int | None = None
     review_id: str | None = None
 
 

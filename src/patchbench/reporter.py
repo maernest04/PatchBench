@@ -98,6 +98,7 @@ def render_review_json(result: ReviewResult) -> str:
             "task": {"id": result.task.identifier, "version": result.task.version},
             "candidate_kind": result.candidate_kind,
             "experiment_id": result.experiment_id,
+            "attempt_number": result.attempt_number,
             "score": result.score.classification,
             "reason": result.score.reason,
             "finding": None

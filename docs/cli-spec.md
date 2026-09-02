@@ -56,7 +56,7 @@ The reviewer writes either `null` or a JSON finding containing `category`, `affe
 
 Use the included Codex bridge by setting `PATCHBENCH_REVIEWER_COMMAND` to `python3` followed by the absolute path to `scripts/patchbench_codex_reviewer.py`. The bridge uses `codex exec` with a JSON schema and writes only Codex's final structured response to the reviewer output path.
 
-When `--experiment` is supplied, its task list, reviewer adapter, model, prompt version, and budgets are validated and stored with the review. Each immutable manifest names one exact pilot configuration.
+When `--experiment` is supplied, its task list, reviewer adapter, model, prompt version, budgets, and attempt count are validated and stored with the review. `--attempt` is required and duplicate task/candidate/attempt records are rejected. Each immutable manifest names one exact pilot configuration.
 
 ### Inspect a stored run
 

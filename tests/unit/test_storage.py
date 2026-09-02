@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import pytest
+
 from patchbench.evaluator import evaluate, passed_command
+from patchbench.models import CandidateKind, ReviewClassification, ReviewResult, ReviewScore
 from patchbench.replay import replay
-from patchbench.storage import FilesystemRunStore
+from patchbench.storage import FilesystemReviewStore, FilesystemRunStore, ReviewStoreError
 from patchbench.task_loader import load_task
 
 
@@ -59,3 +62,23 @@ def test_lists_saved_runs(tmp_path):
     runs = run_store.list_runs()
 
     assert {run.run_id for run in runs} == {first.run_id, second.run_id}
+
+
+def test_rejects_duplicate_experiment_review_attempt(tmp_path):
+    fixture = Path("fixtures/cache-invalidation")
+    result = ReviewResult(
+        task=load_task(fixture),
+        patch=fixture / "candidates" / "correct.patch",
+        score=ReviewScore(ReviewClassification.CORRECT_REJECTION, "no finding"),
+        finding=None,
+        duration_seconds=1.0,
+        candidate_kind=CandidateKind.CONTROL,
+        experiment_id="experiment",
+        attempt_number=1,
+    )
+    store = FilesystemReviewStore(tmp_path / "reviews")
+
+    store.save(result)
+
+    with pytest.raises(ReviewStoreError, match="review attempt already exists"):
+        store.save(result)

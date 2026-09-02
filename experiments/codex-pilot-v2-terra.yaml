@@ -1,0 +1,18 @@
+id: codex-pilot-v2-terra
+attempt_count: 3
+tasks:
+  - api-user-directory-v1@1
+  - cache-invalidation-v1@1
+  - cli-report-generation-v1@2
+  - redacted-audit-log-v1@1
+  - refactor-pricing-v1@1
+  - retry-delivery-v1@1
+reviewer:
+  adapter: codex-cli
+  model: gpt-5.6-terra
+  prompt_version: codex-reviewer-v1
+budget:
+  timeout_seconds: 600
+  max_tool_calls: 50
+  max_tokens: 100000
+  max_cost_usd: 10.0
