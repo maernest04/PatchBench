@@ -1,0 +1,8 @@
+author_rationale: API callers often depend on stable lookup return shapes during internal changes.
+candidate_plausibility: The regression simplifies the lookup implementation while silently changing its compatibility contract.
+difficulty: medium
+confound_review: Public tests cover present-user lookup without revealing the compatibility scenario.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

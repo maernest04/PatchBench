@@ -41,8 +41,10 @@ reviewer_ground_truth: hidden/reviewer.yaml
 candidates:
   - path: candidates/correct.patch
     kind: control
+    provenance: human_authored
   - path: candidates/stale-cache.patch
     kind: known_regression
+    provenance: observed_ai_style
 
 checks:
   - type: pytest
@@ -96,3 +98,5 @@ affected_symbols:
 ## Candidate rules
 
 Each task registers one `control` patch that passes public and hidden checks and one `known_regression` patch that passes public checks but fails a hidden contract. PatchBench only calculates reviewer recall and false-positive rates for registered candidates. The evaluator applies each unified diff only to a temporary candidate workspace.
+
+Candidate provenance is `human_authored` or `observed_ai_style`.

@@ -1,0 +1,6 @@
+fault_id: timeout-skips-operation-cleanup
+category: reliability
+affected_paths:
+  - timeout_runner.py
+affected_symbols:
+  - TimeoutRunner.run

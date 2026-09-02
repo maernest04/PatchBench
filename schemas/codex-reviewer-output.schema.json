@@ -4,10 +4,11 @@
   "required": ["outcome", "category", "affected_paths", "affected_symbols", "rationale"],
   "properties": {
     "outcome": {"enum": ["finding", "no_finding"]},
-    "category": {"enum": ["correctness", "preservation", "safety", "reliability", "efficiency", "none"]},
+    "category": {"enum": ["correctness", "preservation", "safety", "reliability", "efficiency", "state_lifecycle", "api_compatibility", "cli_filesystem", "security_policy", "refactor_preservation", "none"]},
     "affected_paths": {"type": "array", "items": {"type": "string"}},
     "affected_symbols": {"type": "array", "items": {"type": "string"}},
-    "rationale": {"type": "string"}
+    "rationale": {"type": "string"},
+    "verification_command": {"type": "array", "minItems": 1, "items": {"type": "string"}}
   },
   "additionalProperties": false
 }

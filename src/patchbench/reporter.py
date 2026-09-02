@@ -108,8 +108,29 @@ def render_review_json(result: ReviewResult) -> str:
                 "affected_paths": result.finding.affected_paths,
                 "affected_symbols": result.finding.affected_symbols,
                 "rationale": result.finding.rationale,
+                "verification_command": result.finding.verification_command,
             },
             "duration_seconds": result.duration_seconds,
+            "artifact_validation": None
+            if result.artifact_validation is None
+            else {
+                "passed": result.artifact_validation.passed,
+                "reason": result.artifact_validation.reason,
+            },
+            "metadata": None
+            if result.metadata is None
+            else {
+                "adapter": result.metadata.adapter,
+                "model": result.metadata.model,
+                "prompt_version": result.metadata.prompt_version,
+                "workflow": result.metadata.workflow,
+                "budget": {
+                    "timeout_seconds": result.metadata.timeout_seconds,
+                    "max_tool_calls": result.metadata.max_tool_calls,
+                    "max_tokens": result.metadata.max_tokens,
+                    "max_cost_usd": result.metadata.max_cost_usd,
+                },
+            },
         },
         sort_keys=True,
     )

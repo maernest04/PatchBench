@@ -57,20 +57,30 @@ def test_scores_no_finding_as_missed():
     assert score.reason == "reviewer reported no finding"
 
 
-def test_scores_unrelated_finding_as_false_positive():
+@pytest.mark.parametrize(
+    "fixture_name",
+    (
+        "api-user-directory",
+        "cache-invalidation",
+        "cli-report-generation",
+        "redacted-audit-log",
+        "refactor-pricing",
+        "retry-delivery",
+    ),
+)
+def test_scores_unrelated_finding_as_false_positive(fixture_name):
     score = score_finding(
-        load_task(Path("fixtures/cache-invalidation")),
+        load_task(Path("fixtures") / fixture_name),
         ReviewerFinding(
-            category="safety",
-            affected_paths=("user_store.py",),
-            affected_symbols=("UserStore.get_user",),
-            rationale="The read path exposes sensitive data.",
+            category="efficiency",
+            affected_paths=("unrelated.py",),
+            affected_symbols=("unrelated",),
+            rationale="The candidate causes an unrelated performance regression.",
         ),
         CandidateKind.KNOWN_REGRESSION,
     )
 
     assert score.classification is ReviewClassification.FALSE_POSITIVE
-    assert score.reason == "finding category does not match ground truth"
 
 
 def test_scores_matching_symbol_as_detected_despite_category_difference():

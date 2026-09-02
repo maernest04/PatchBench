@@ -1,0 +1,38 @@
+id: pilot-v1
+task_manifests:
+  - key: api-user-directory-v1@1
+    sha256: eae07c704dfc4dba5ea7c106037850047b712e15b5f380582d1d4eab1fca8c93
+  - key: atomic-export-v1@1
+    sha256: d8badba8853adfbb78afdef37ed73035ba212b4d70a4f16a516803fc5f19b46d
+  - key: cache-invalidation-v1@1
+    sha256: ec6be65044e6be4d0dbd4693c161387452822454e31fbd0117cdb44ed3b7102d
+  - key: callback-ordering-v1@1
+    sha256: a0fb61c83d4473b5920595a502739859adf40f240448469572e51f81d30914f9
+  - key: cli-report-generation-v1@2
+    sha256: 3ecf77730854beb1976d07b032e7e65d12f5024ff78280a05a7875e133f7afdf
+  - key: collection-reset-v1@1
+    sha256: d3b39ca931f14f687bdccc54bbb89d7b5f62ef8da67906840e22f594beb42d43
+  - key: input-encoding-v1@1
+    sha256: b7acd66732888c1cb06ff1b9bc175fbf97c7b4cc5595406b343fb661792a1b0e
+  - key: optional-field-compatibility-v1@1
+    sha256: 33538217c5f7eff97ad9d68acf5b6398614e300ad5f4b1adec606aa726dc232f
+  - key: pagination-compatibility-v1@1
+    sha256: 704046e3945db0ec6755aefa4526f0843621561573e0acbe10c4f4ba9a069a76
+  - key: parameter-alias-v1@1
+    sha256: cdf7364a1d9e5dab2dd6aa17662062a35ca1cf9477cf13b0ad4cbaa9f8691cc9
+  - key: redacted-audit-log-v1@1
+    sha256: 865db2f1e225f7b7101a1c9479cfbd32beaf90c232c278b081a9b4da3acbf303
+  - key: refactor-pricing-v1@1
+    sha256: 7a119e7ffdee0b6c6abf1bf1284ef1335b95a6df473a40d9f7e23fef6b0a3003
+  - key: retry-backoff-v1@1
+    sha256: 902286bb5aae09bd00fd8185f18721f8c2914895895c019e04df1b3191c7979d
+  - key: retry-delivery-v1@1
+    sha256: ef1b5c02d9732b29bed2a1c93f72ff2c8578258e34114c3e7f200a8b2de776f8
+  - key: session-expiry-v1@1
+    sha256: 4f12c79043319ca0ef8a8858e8effddd0228b3785140e0091fb4bf31cc12d42b
+  - key: timeout-cleanup-v1@1
+    sha256: ec5366deee1f991e243be41590c03688c7ffd137182043e9ed40b87013277930
+  - key: token-log-redaction-v1@1
+    sha256: 00a72def519b62dae5a237ea962a9659d3dd5313c251cca874d9601ac0761943
+  - key: workspace-path-authorization-v1@1
+    sha256: a9e123dd153b92899487099cb54b2cb245a948bae7c29db9e4fe865d2ef73154

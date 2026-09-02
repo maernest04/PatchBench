@@ -1,0 +1,11 @@
+diff --git a/product_catalog.py b/product_catalog.py
+index 7ccfb25..df25f32 100644
+--- a/product_catalog.py
++++ b/product_catalog.py
+@@ -10,1 +10,5 @@
+-        return list(self._products)
++        return {"items": list(self._products)}
++
++    def list_page(self, page, page_size):
++        start = (page - 1) * page_size
++        return self._products[start : start + page_size]

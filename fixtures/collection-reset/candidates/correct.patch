@@ -1,0 +1,10 @@
+diff --git a/event_collection.py b/event_collection.py
+index 4ecbbbc..9d8840e 100644
+--- a/event_collection.py
++++ b/event_collection.py
+@@ -6,4 +6,4 @@ class EventCollection:
+         self.items.append(event)
+ 
+     def reset(self):
+-        raise NotImplementedError
++        self.items.clear()

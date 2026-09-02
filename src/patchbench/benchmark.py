@@ -21,14 +21,20 @@ def build_report(payloads: list[dict]) -> dict:
 
 def build_review_report(payloads: list[dict]) -> dict:
     by_task = {}
+    by_category = {}
+    by_workflow = {}
     for payload in payloads:
         task = payload["task"]
         key = f"{task['id']}@{task['version']}"
         by_task.setdefault(key, []).append(payload)
+        by_category.setdefault(payload.get("category") or "unlabeled", []).append(payload)
+        by_workflow.setdefault(payload.get("workflow") or "unlabeled", []).append(payload)
     return {
         "review_report_version": REVIEW_REPORT_VERSION,
         "reviews": _review_summary(payloads),
         "tasks": {key: _review_summary(task_payloads) for key, task_payloads in by_task.items()},
+        "categories": {key: _review_summary(category_payloads) for key, category_payloads in by_category.items()},
+        "workflows": {key: _review_summary(workflow_payloads) for key, workflow_payloads in by_workflow.items()},
         "attempts": [_review_attempt(payload) for payload in payloads],
         "limitations": [
             "Rates describe only stored reviewer attempts and are not a general model ranking.",
@@ -70,10 +76,12 @@ def _review_summary(payloads: list[dict]) -> dict:
     return {
         "total_reviews": total,
         "outcomes": dict(scores),
+        "outcome_counts": {"numerator": dict(scores), "denominator": total},
         "known_regression_reviews": len([payload for payload in payloads if payload.get("candidate_kind") == "known_regression"]),
         "control_reviews": len([payload for payload in payloads if payload.get("candidate_kind") == "control"]),
         "unlabeled_reviews": len([payload for payload in payloads if payload.get("candidate_kind") is None]),
-        "detection_rate": _review_rate(payloads, "known_regression", "DETECTED"),
+        "detection_rate": _review_rate(payloads, "known_regression", "DETECTED", "EXECUTABLE_DETECTED"),
+        "executable_detection_rate": _review_rate(payloads, "known_regression", "EXECUTABLE_DETECTED"),
         "miss_rate": _review_rate(payloads, "known_regression", "MISSED"),
         "false_positive_rate": _review_rate(payloads, "control", "FALSE_POSITIVE"),
         "correct_rejection_rate": _review_rate(payloads, "control", "CORRECT_REJECTION"),
@@ -89,6 +97,8 @@ def _review_attempt(payload: dict) -> dict:
         "candidate_kind": payload.get("candidate_kind"),
         "experiment_id": payload.get("experiment_id"),
         "attempt_number": payload.get("attempt_number"),
+        "workflow": payload.get("workflow"),
+        "category": payload.get("category"),
         "score": payload["score"],
         "reason": payload["reason"],
         "finding": payload["finding"],
@@ -97,9 +107,9 @@ def _review_attempt(payload: dict) -> dict:
     }
 
 
-def _review_rate(payloads: list[dict], candidate_kind: str, score: str) -> float:
+def _review_rate(payloads: list[dict], candidate_kind: str, *scores: str) -> float:
     matching = [payload for payload in payloads if payload.get("candidate_kind") == candidate_kind]
-    return _rate(sum(payload["score"] == score for payload in matching), len(matching))
+    return _rate(sum(payload["score"] in scores for payload in matching), len(matching))
 
 
 def _has_failed_check(payload: dict, visibility: str | None = None, category: str | None = None) -> bool:

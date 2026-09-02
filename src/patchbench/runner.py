@@ -95,6 +95,10 @@ class DockerRunner:
             duration_seconds=result.duration_seconds,
         )
 
+    def run_command(self, task: Task, workspace: Path, command: tuple[str, ...]) -> CommandResult:
+        self._ensure_image(task)
+        return self._run_check_command(self._container_command(task, workspace) + [task.image, *command], task.constraints.timeout_seconds)
+
     def _run_scenario(self, task: Task, workspace: Path, scenario: Path) -> CommandResult:
         command = self._container_command(task, workspace)
         command.extend(

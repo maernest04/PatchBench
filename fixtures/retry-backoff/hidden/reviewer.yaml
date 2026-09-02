@@ -1,0 +1,6 @@
+fault_id: retry-omits-exponential-backoff
+category: reliability
+affected_paths:
+  - retry_runner.py
+affected_symbols:
+  - RetryRunner.run

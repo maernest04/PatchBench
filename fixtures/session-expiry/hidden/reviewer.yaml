@@ -1,0 +1,6 @@
+fault_id: expired-session-remains-active
+category: state_lifecycle
+affected_paths:
+  - session_store.py
+affected_symbols:
+  - SessionStore.get_session

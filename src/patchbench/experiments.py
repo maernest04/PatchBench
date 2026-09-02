@@ -3,6 +3,8 @@ from pathlib import Path
 
 import yaml
 
+from patchbench.models import ReviewWorkflow
+
 
 class ExperimentValidationError(ValueError):
     pass
@@ -11,6 +13,8 @@ class ExperimentValidationError(ValueError):
 @dataclass(frozen=True)
 class Experiment:
     identifier: str
+    corpus: str
+    workflow: ReviewWorkflow
     task_keys: tuple[str, ...]
     reviewer_adapter: str
     model: str
@@ -38,6 +42,8 @@ def load_experiment(path: Path) -> Experiment:
         raise ExperimentValidationError("tasks must be a non-empty list of strings")
     return Experiment(
         identifier=_require_string(raw, "id"),
+        corpus=_require_string(raw, "corpus"),
+        workflow=_load_workflow(raw),
         task_keys=tuple(tasks),
         reviewer_adapter=_require_string(reviewer, "adapter"),
         model=_require_string(reviewer, "model"),
@@ -48,6 +54,13 @@ def load_experiment(path: Path) -> Experiment:
         max_cost_usd=_require_positive_number(budget, "max_cost_usd"),
         attempt_count=_require_positive_int(raw, "attempt_count"),
     )
+
+
+def _load_workflow(raw: dict) -> ReviewWorkflow:
+    try:
+        return ReviewWorkflow(_require_string(raw, "workflow"))
+    except ValueError as error:
+        raise ExperimentValidationError("workflow is invalid") from error
 
 
 def _require_object(raw: dict, field: str) -> dict:

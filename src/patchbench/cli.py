@@ -7,10 +7,11 @@ from pathlib import Path
 from patchbench.agents import AgentBudget, AgentConfigurationError, AgentExecutionError, CommandAgentAdapter
 from patchbench.benchmark import build_report, build_review_report
 from patchbench.codex import CodexRunError, run_codex
-from patchbench.models import AgentMetadata, Classification, EvaluationResult, ReviewClassification, ReviewResult, ReviewScore
+from patchbench.models import AgentMetadata, Classification, EvaluationResult, ReviewerMetadata, ReviewClassification, ReviewResult, ReviewScore
 from patchbench.evaluator import evaluate
 from patchbench.experiments import ExperimentValidationError, load_experiment
 from patchbench.replay import replay
+from patchbench.review_artifact_validation import ArtifactValidationError, validate_artifact
 from patchbench.reporter import render_json, render_review_json, render_review_text, render_stored_text, render_text
 from patchbench.review_scoring import score_finding
 from patchbench.reviewers import CommandReviewerAdapter, ReviewerBudget, ReviewerConfigurationError, ReviewerExecutionError
@@ -123,6 +124,8 @@ def main() -> int:
                 parser.error(f"task is not registered in experiment: {task.identifier}@{task.version}")
             if experiment.reviewer_adapter != "codex-cli":
                 parser.error(f"unsupported experiment reviewer adapter: {experiment.reviewer_adapter}")
+            if experiment.workflow.value == "public_test":
+                parser.error("public-test experiments must use evaluate")
             if arguments.attempt is None or arguments.attempt < 1 or arguments.attempt > experiment.attempt_count:
                 parser.error(f"--attempt must be between 1 and {experiment.attempt_count}")
         budget = ReviewerBudget(
@@ -138,11 +141,42 @@ def main() -> int:
                 if experiment:
                     adapter = CommandReviewerAdapter(
                         adapter.command,
-                        {"PATCHBENCH_REVIEWER_MODEL": experiment.model, "PATCHBENCH_REVIEWER_PROMPT_VERSION": experiment.prompt_version},
+                        {
+                            "PATCHBENCH_REVIEWER_MODEL": experiment.model,
+                            "PATCHBENCH_REVIEWER_PROMPT_VERSION": experiment.prompt_version,
+                            "PATCHBENCH_REVIEWER_WORKFLOW": experiment.workflow.value,
+                        },
                     )
                 attempt = adapter.review(task, arguments.patch, Path(temporary_directory), budget)
-            result = ReviewResult(task, arguments.patch, score_finding(task, attempt.finding, candidate_kind), attempt.finding, attempt.duration_seconds, candidate_kind, experiment.identifier if experiment else None, arguments.attempt if experiment else None)
-        except (ReviewerConfigurationError, ReviewerExecutionError, ValueError) as error:
+            artifact_validation = (
+                validate_artifact(task, attempt.finding.verification_command)
+                if attempt.finding and attempt.finding.verification_command
+                else None
+            )
+            metadata = ReviewerMetadata(
+                experiment.reviewer_adapter if experiment else "command",
+                experiment.model if experiment else None,
+                experiment.prompt_version if experiment else None,
+                experiment.workflow if experiment else None,
+                budget.timeout_seconds,
+                budget.max_tool_calls,
+                budget.max_tokens,
+                budget.max_cost_usd,
+            )
+            result = ReviewResult(
+                task,
+                arguments.patch,
+                score_finding(task, attempt.finding, candidate_kind, artifact_validation),
+                attempt.finding,
+                attempt.duration_seconds,
+                candidate_kind,
+                experiment.identifier if experiment else None,
+                arguments.attempt if experiment else None,
+                artifact_validation=artifact_validation,
+                metadata=metadata,
+                raw_output=attempt.raw_output,
+            )
+        except (ArtifactValidationError, ReviewerConfigurationError, ReviewerExecutionError, ValueError) as error:
             result = ReviewResult(
                 task,
                 arguments.patch,

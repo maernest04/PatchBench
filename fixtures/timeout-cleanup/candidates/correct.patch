@@ -1,0 +1,30 @@
+diff --git a/timeout_runner.py b/timeout_runner.py
+--- a/timeout_runner.py
++++ b/timeout_runner.py
+@@ -1,3 +1,25 @@
++import threading
++
++
+ class TimeoutRunner:
+     def run(self, operation, timeout_seconds):
+-        raise NotImplementedError
++        result = []
++        error = []
++
++        def execute():
++            try:
++                result.append(operation())
++            except BaseException as exc:
++                error.append(exc)
++
++        worker = threading.Thread(target=execute, daemon=True)
++        worker.start()
++        worker.join(timeout_seconds)
++        if worker.is_alive():
++            cleanup = getattr(operation, "cleanup", None)
++            if cleanup is not None:
++                cleanup()
++            raise TimeoutError("operation timed out")
++        if error:
++            raise error[0]
++        return result[0]

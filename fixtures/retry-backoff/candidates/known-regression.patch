@@ -1,0 +1,15 @@
+diff --git a/retry_runner.py b/retry_runner.py
+--- a/retry_runner.py
++++ b/retry_runner.py
+@@ -2,5 +2,10 @@ class RetryRunner:
+     def __init__(self, sleep):
+         self.sleep = sleep
+ 
+     def run(self, operation, attempts, backoff_seconds):
+-        raise NotImplementedError
++        for attempt in range(attempts):
++            try:
++                return operation()
++            except ValueError:
++                if attempt == attempts - 1:
++                    raise

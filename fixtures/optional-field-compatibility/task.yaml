@@ -1,0 +1,29 @@
+id: optional-field-compatibility-v1
+version: 1
+repository: repository
+runtime:
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+  cpu_cores: 1
+reviewer_ground_truth: hidden/reviewer.yaml
+candidates:
+  - path: candidates/correct.patch
+    kind: control
+    provenance: human_authored
+  - path: candidates/known-regression.patch
+    kind: known_regression
+    provenance: observed_ai_style
+checks:
+  - name: visible-optional-field-api
+    type: pytest
+    visibility: public
+    path: public/tests
+  - name: omitted-nickname-api-compatibility
+    type: api
+    visibility: hidden
+    path: hidden/scenarios/create_profile_compatibility.py
+    expected:
+      stdout: '{"id":"u-1","name":"Ada Lovelace"}'

@@ -1,0 +1,8 @@
+author_rationale: Session expiry must remove unusable lifecycle state.
+candidate_plausibility: The regression adds expiry handling but leaves expired records readable.
+difficulty: medium
+confound_review: Public tests cover active sessions without naming expiry boundaries.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

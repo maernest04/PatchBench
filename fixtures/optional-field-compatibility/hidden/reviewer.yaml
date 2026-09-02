@@ -1,0 +1,6 @@
+fault_id: absent-optional-field-is-serialized
+category: api_compatibility
+affected_paths:
+  - profile_service.py
+affected_symbols:
+  - ProfileService.create_profile

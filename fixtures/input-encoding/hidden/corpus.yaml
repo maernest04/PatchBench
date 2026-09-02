@@ -1,0 +1,8 @@
+author_rationale: Command-line input must use the documented UTF-8 encoding.
+candidate_plausibility: The regression uses a permissive legacy encoding that passes ASCII tests.
+difficulty: low
+confound_review: Public tests use ASCII input and do not name encoding behavior.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

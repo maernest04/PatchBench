@@ -1,0 +1,6 @@
+fault_id: export-overwrites-destination-directly
+category: filesystem
+affected_paths:
+  - export.py
+affected_symbols:
+  - export_items

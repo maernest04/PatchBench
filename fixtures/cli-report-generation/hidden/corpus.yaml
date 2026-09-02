@@ -1,0 +1,8 @@
+author_rationale: Command-line output contracts include required filesystem artifacts as well as visible stdout.
+candidate_plausibility: The regression preserves the visible slug output while omitting the structured report artifact.
+difficulty: medium
+confound_review: The public contract intentionally covers only stdout and contains no report-file terminology.
+deterministic_environment:
+  image: patchbench-python-cli:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

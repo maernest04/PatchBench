@@ -1,0 +1,6 @@
+fault_id: callback-order-reversed
+category: preservation
+affected_paths:
+  - callbacks.py
+affected_symbols:
+  - CallbackRunner.run

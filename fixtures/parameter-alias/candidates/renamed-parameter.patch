@@ -1,0 +1,15 @@
+diff --git a/names.py b/names.py
+index 75eb9d6..c0b99c6 100644
+--- a/names.py
++++ b/names.py
+@@ -1,2 +1,8 @@
+-def normalize_name(value, uppercase=False):
+-    raise NotImplementedError
++class NameNormalizer:
++    def normalize(self, value, upper=False):
++        value = value.strip()
++        return value.upper() if upper else value
++
++
++def normalize_name(value, upper=False):
++    return NameNormalizer().normalize(value, upper=upper)

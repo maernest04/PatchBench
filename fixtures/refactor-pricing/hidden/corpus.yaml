@@ -1,0 +1,8 @@
+author_rationale: Refactors must preserve public functions used by downstream callers.
+candidate_plausibility: The regression moves pricing logic to a new interface and removes the legacy entry point.
+difficulty: low
+confound_review: Public tests cover the new calculation path without naming the retained compatibility function.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

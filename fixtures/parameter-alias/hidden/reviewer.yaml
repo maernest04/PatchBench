@@ -1,0 +1,6 @@
+fault_id: uppercase-keyword-removed
+category: api_compatibility
+affected_paths:
+  - names.py
+affected_symbols:
+  - normalize_name

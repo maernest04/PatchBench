@@ -1,0 +1,8 @@
+author_rationale: Retry logic must preserve exactly-once delivery behavior after transient failure.
+candidate_plausibility: The regression adds retries but duplicates the send after an uncertain attempt.
+difficulty: medium
+confound_review: Public tests cover a successful delivery and do not name retry behavior.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

@@ -1,0 +1,8 @@
+author_rationale: Filesystem path APIs must reject traversal outside the authorized workspace.
+candidate_plausibility: The regression resolves valid nested paths but omits authorization checks.
+difficulty: medium
+confound_review: Public tests use only safe relative paths and do not name traversal behavior.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

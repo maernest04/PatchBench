@@ -1,0 +1,6 @@
+fault_id: workspace-path-escapes-boundary
+category: safety
+affected_paths:
+  - workspace.py
+affected_symbols:
+  - resolve_workspace_path

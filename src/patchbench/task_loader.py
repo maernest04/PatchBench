@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from patchbench.models import Candidate, CandidateKind, Check, Constraints, ReviewerGroundTruth, Task
+from patchbench.models import REVIEW_CATEGORIES, Candidate, CandidateKind, Check, Constraints, ReviewerGroundTruth, Task
 
 
 class TaskValidationError(ValueError):
@@ -94,7 +94,10 @@ def _load_candidates(task_directory: Path, raw: dict) -> tuple[Candidate, ...]:
             kind = CandidateKind(kind_value)
         except ValueError as error:
             raise TaskValidationError(f"candidates[{index}].kind is invalid: {kind_value}") from error
-        candidates.append(Candidate(patch=patch, kind=kind))
+        provenance = _require_string(value, "provenance")
+        if provenance not in {"human_authored", "observed_ai_style"}:
+            raise TaskValidationError(f"candidates[{index}].provenance is invalid: {provenance}")
+        candidates.append(Candidate(patch=patch, kind=kind, provenance=provenance))
     if {candidate.kind for candidate in candidates} != {CandidateKind.CONTROL, CandidateKind.KNOWN_REGRESSION}:
         raise TaskValidationError("candidates must include one control and one known_regression")
     if len({candidate.patch for candidate in candidates}) != len(candidates):
@@ -121,7 +124,7 @@ def _load_reviewer_ground_truth(task_directory: Path, raw: dict) -> ReviewerGrou
     if not isinstance(raw_ground_truth, dict):
         raise TaskValidationError("reviewer ground truth must be an object")
     category = _require_string(raw_ground_truth, "category")
-    if category not in {"correctness", "preservation", "safety", "reliability", "efficiency"}:
+    if category not in REVIEW_CATEGORIES:
         raise TaskValidationError(f"reviewer ground truth has invalid category: {category}")
     return ReviewerGroundTruth(
         fault_id=_require_string(raw_ground_truth, "fault_id"),
@@ -149,7 +152,7 @@ def _load_check(task_directory: Path, raw: object, index: int) -> Check:
     if visibility not in {"public", "hidden"}:
         raise TaskValidationError(f"checks[{index}] has invalid visibility: {visibility}")
     category = raw.get("category", "correctness")
-    if not isinstance(category, str) or category not in {"correctness", "preservation", "safety", "reliability", "efficiency"}:
+    if not isinstance(category, str) or category not in REVIEW_CATEGORIES:
         raise TaskValidationError(f"checks[{index}] has invalid category: {category}")
     path = None
     if kind in {"pytest", "differential", "api"}:

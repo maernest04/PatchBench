@@ -1,0 +1,15 @@
+diff --git a/export.py b/export.py
+--- a/export.py
++++ b/export.py
+@@ -4,7 +4,10 @@ from pathlib import Path
+ 
+ 
+ def export_items(items, output):
+-    Path(output).write_text(json.dumps(items) + "\n")
++    output = Path(output)
++    temporary = output.with_name(f".{output.name}.tmp")
++    temporary.write_text(json.dumps(items) + "\n")
++    temporary.replace(output)
+ 
+ 
+ def main():

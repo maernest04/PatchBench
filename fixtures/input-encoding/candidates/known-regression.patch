@@ -1,0 +1,12 @@
+diff --git a/read_lines.py b/read_lines.py
+--- a/read_lines.py
++++ b/read_lines.py
+@@ -3,7 +3,7 @@ from pathlib import Path
+ 
+ 
+ def read_lines(input_path):
+-    return Path(input_path).read_text(encoding="ascii").splitlines()
++    return Path(input_path).read_text(encoding="latin-1").splitlines()
+ 
+ 
+ def main():

@@ -1,0 +1,6 @@
+fault_id: input-is-decoded-with-ascii
+category: filesystem
+affected_paths:
+  - read_lines.py
+affected_symbols:
+  - read_lines

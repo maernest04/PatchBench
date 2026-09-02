@@ -1,0 +1,8 @@
+author_rationale: Cache invalidation after deletion is a common stateful preservation regression.
+candidate_plausibility: The regression implements read caching but omits invalidation in one mutation path.
+difficulty: medium
+confound_review: Public tests cover caching reads without naming or exercising deletion after a cache hit.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

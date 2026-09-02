@@ -11,14 +11,18 @@ public_directory = Path(os.environ["PATCHBENCH_REVIEWER_PUBLIC_DIR"])
 candidate_patch = Path(os.environ["PATCHBENCH_REVIEWER_PATCH"])
 output_path = Path(os.environ["PATCHBENCH_REVIEWER_OUTPUT"])
 model = os.environ.get("PATCHBENCH_REVIEWER_MODEL")
+prompt_version = os.environ.get("PATCHBENCH_REVIEWER_PROMPT_VERSION", "codex-reviewer-v1")
 schema_path = Path(__file__).resolve().parents[1] / "schemas" / "codex-reviewer-output.schema.json"
-prompt = (
-    "Review the candidate code change without modifying files. "
-    f"The patched repository is {repository}. "
-    f"The public task materials are {public_directory}. "
-    f"The candidate patch is {candidate_patch}. "
-    "Identify one concrete regression only when its category, affected paths or symbols, and rationale are supported by the public materials. "
-    "Set outcome to finding for a concrete regression. Otherwise set outcome to no_finding, category to none, and use empty evidence lists."
+prompt_path = Path(__file__).resolve().parents[1] / "prompts" / f"{prompt_version}.txt"
+prompt = prompt_path.read_text().format(
+    repository=repository,
+    public_directory=public_directory,
+    candidate_patch=candidate_patch,
+    verification_instruction=(
+        "Provide a verification_command that returns non-zero for the candidate and zero for the control."
+        if os.environ.get("PATCHBENCH_REVIEWER_WORKFLOW") == "executable_evidence"
+        else "Do not provide a verification_command."
+    ),
 )
 result = subprocess.run(
     [

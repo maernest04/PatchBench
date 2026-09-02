@@ -1,0 +1,8 @@
+author_rationale: Refactors must retain legacy keyword parameter names used by callers.
+candidate_plausibility: The regression renames a wrapper parameter while preserving positional calls.
+difficulty: low
+confound_review: Public tests use positional invocation and do not name the legacy keyword.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

@@ -1,0 +1,13 @@
+diff --git a/profile_service.py b/profile_service.py
+index 6d9bd83..6b41c22 100644
+--- a/profile_service.py
++++ b/profile_service.py
+@@ -1,3 +1,6 @@
+ class ProfileService:
+-    def create_profile(self, user_id, name):
+-        return {"id": user_id, "name": name}
++    def create_profile(self, user_id, name, nickname=None):
++        profile = {"id": user_id, "name": name}
++        if nickname is not None:
++            profile["nickname"] = nickname
++        return profile

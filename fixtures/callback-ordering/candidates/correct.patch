@@ -1,0 +1,15 @@
+diff --git a/callbacks.py b/callbacks.py
+index 487b2e8..cd1caa2 100644
+--- a/callbacks.py
++++ b/callbacks.py
+@@ -1,2 +1,8 @@
+-def run_callbacks(callbacks, value):
+-    raise NotImplementedError
++class CallbackRunner:
++    def run(self, callbacks, value):
++        for callback in callbacks:
++            callback(value)
++
++
++def run_callbacks(callbacks, value):
++    return CallbackRunner().run(callbacks, value)

@@ -1,0 +1,8 @@
+author_rationale: Timeout handling must release resources before reporting failure.
+candidate_plausibility: The regression raises the timeout without invoking cleanup.
+difficulty: medium
+confound_review: Public tests cover completed operations without inducing a timeout.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

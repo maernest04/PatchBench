@@ -1,0 +1,28 @@
+id: workspace-path-authorization-v1
+version: 1
+repository: repository
+runtime:
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+  cpu_cores: 1
+reviewer_ground_truth: hidden/reviewer.yaml
+candidates:
+  - path: candidates/correct.patch
+    kind: control
+    provenance: human_authored
+  - path: candidates/unrestricted-path.patch
+    kind: known_regression
+    provenance: observed_ai_style
+checks:
+  - name: visible-workspace-path-resolution
+    type: pytest
+    visibility: public
+    path: public/tests
+  - name: workspace-boundary-authorization
+    type: pytest
+    visibility: hidden
+    category: safety
+    path: hidden/tests

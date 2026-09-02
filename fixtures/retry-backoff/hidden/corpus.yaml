@@ -1,0 +1,8 @@
+author_rationale: Retries must use predictable exponential delays after transient failures.
+candidate_plausibility: The regression retries successfully but uses a linear delay.
+difficulty: medium
+confound_review: Public tests cover eventual success without observing delay values.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

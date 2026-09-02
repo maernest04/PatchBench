@@ -1,0 +1,14 @@
+diff --git a/session_store.py b/session_store.py
+index 509b61a..b013dda 100644
+--- a/session_store.py
++++ b/session_store.py
+@@ -10,4 +10,8 @@ class SessionStore:
+         }
+ 
+     def get_session(self, session_id, now):
+-        raise NotImplementedError
++        session = self.sessions.get(session_id)
++        if session is not None and session["expires_at"] <= now:
++            self.sessions.pop(session_id)
++            return None
++        return session

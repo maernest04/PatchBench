@@ -1,0 +1,28 @@
+id: parameter-alias-v1
+version: 1
+repository: repository
+runtime:
+  image: patchbench-python-pytest:0.1
+  dockerfile: Dockerfile
+constraints:
+  timeout_seconds: 30
+  memory_megabytes: 256
+  cpu_cores: 1
+reviewer_ground_truth: hidden/reviewer.yaml
+candidates:
+  - path: candidates/correct.patch
+    kind: control
+    provenance: human_authored
+  - path: candidates/renamed-parameter.patch
+    kind: known_regression
+    provenance: observed_ai_style
+checks:
+  - name: visible-normalizer-api
+    type: pytest
+    visibility: public
+    path: public/tests
+  - name: legacy-keyword-parameter
+    type: pytest
+    visibility: hidden
+    category: api_compatibility
+    path: hidden/tests

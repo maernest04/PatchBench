@@ -1,0 +1,6 @@
+fault_id: list-products-return-shape-changed
+category: api_compatibility
+affected_paths:
+  - product_catalog.py
+affected_symbols:
+  - ProductCatalog.list_products

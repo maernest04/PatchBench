@@ -1,0 +1,8 @@
+author_rationale: Audit improvements can accidentally expose credential material in diagnostic output.
+candidate_plausibility: The regression enriches the event format but fails to preserve credential redaction.
+difficulty: medium
+confound_review: Public tests establish event formatting without exposing the secret-bearing input shape.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

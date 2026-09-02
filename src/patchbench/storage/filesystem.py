@@ -115,17 +115,32 @@ class FilesystemReviewStore:
             raise ReviewStoreError(f"review attempt already exists: {review_id}") from error
         if stored_result.patch.is_file():
             shutil.copy2(stored_result.patch, review_directory / "candidate.patch")
+        shutil.copytree(stored_result.task.root, review_directory / "task")
+        if stored_result.raw_output is not None:
+            (review_directory / "reviewer-output.json").write_text(stored_result.raw_output)
         payload = {
             "review_id": review_id,
             "task": {"id": stored_result.task.identifier, "version": stored_result.task.version},
+            "category": stored_result.task.reviewer_ground_truth.category if stored_result.task.reviewer_ground_truth else None,
             "candidate_kind": stored_result.candidate_kind,
             "experiment_id": stored_result.experiment_id,
             "attempt_number": stored_result.attempt_number,
+            "workflow": stored_result.metadata.workflow if stored_result.metadata else None,
             "patch_sha256": _sha256(stored_result.patch) if stored_result.patch.is_file() else None,
             "score": stored_result.score.classification,
             "reason": stored_result.score.reason,
             "finding": _finding_payload(stored_result),
             "duration_seconds": stored_result.duration_seconds,
+            "artifact_validation": _artifact_validation_payload(stored_result),
+            "metadata": _reviewer_metadata_payload(stored_result),
+            "environment": {
+                "python": sys.version,
+                "platform": platform.platform(),
+                "image": stored_result.task.image,
+            },
+            "task_snapshot": "task",
+            "patch_snapshot": "candidate.patch" if stored_result.patch.is_file() else None,
+            "reviewer_output": "reviewer-output.json" if stored_result.raw_output is not None else None,
             "created_at": datetime.now(UTC).isoformat(),
         }
         (review_directory / "result.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
@@ -165,6 +180,48 @@ def _finding_payload(result: ReviewResult) -> dict | None:
         "affected_paths": result.finding.affected_paths,
         "affected_symbols": result.finding.affected_symbols,
         "rationale": result.finding.rationale,
+        "verification_command": result.finding.verification_command,
+    }
+
+
+def _artifact_validation_payload(result: ReviewResult) -> dict | None:
+    validation = result.artifact_validation
+    if validation is None:
+        return None
+    return {
+        "passed": validation.passed,
+        "reason": validation.reason,
+        "candidate": _command_payload(validation.candidate),
+        "control": _command_payload(validation.control),
+    }
+
+
+def _reviewer_metadata_payload(result: ReviewResult) -> dict | None:
+    metadata = result.metadata
+    if metadata is None:
+        return None
+    return {
+        "adapter": metadata.adapter,
+        "model": metadata.model,
+        "prompt_version": metadata.prompt_version,
+        "workflow": metadata.workflow,
+        "budget": {
+            "timeout_seconds": metadata.timeout_seconds,
+            "max_tool_calls": metadata.max_tool_calls,
+            "max_tokens": metadata.max_tokens,
+            "max_cost_usd": metadata.max_cost_usd,
+        },
+    }
+
+
+def _command_payload(result) -> dict | None:
+    if result is None:
+        return None
+    return {
+        "returncode": result.returncode,
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+        "duration_seconds": result.duration_seconds,
     }
 
 

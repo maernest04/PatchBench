@@ -1,0 +1,8 @@
+author_rationale: Filesystem export failures must not corrupt a prior successful output.
+candidate_plausibility: The regression simplifies output writing by replacing the file directly.
+difficulty: medium
+confound_review: Public tests cover successful export without inducing replacement failure.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

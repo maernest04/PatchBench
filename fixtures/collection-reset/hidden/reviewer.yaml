@@ -1,0 +1,6 @@
+fault_id: reset-replaces-observed-collection
+category: state_lifecycle
+affected_paths:
+  - event_collection.py
+affected_symbols:
+  - EventCollection.reset

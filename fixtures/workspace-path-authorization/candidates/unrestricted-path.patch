@@ -1,0 +1,9 @@
+diff --git a/workspace.py b/workspace.py
+--- a/workspace.py
++++ b/workspace.py
+@@ -2,4 +2,4 @@ from pathlib import Path
+ 
+ 
+ def resolve_workspace_path(workspace_root, requested_path):
+-    return Path(workspace_root) / requested_path
++    return Path(workspace_root) / requested_path

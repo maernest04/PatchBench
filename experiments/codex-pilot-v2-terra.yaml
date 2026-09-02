@@ -1,12 +1,26 @@
 id: codex-pilot-v2-terra
+corpus: pilot-v1
+workflow: text_only
 attempt_count: 3
 tasks:
   - api-user-directory-v1@1
+  - atomic-export-v1@1
+  - callback-ordering-v1@1
   - cache-invalidation-v1@1
   - cli-report-generation-v1@2
+  - collection-reset-v1@1
+  - input-encoding-v1@1
+  - optional-field-compatibility-v1@1
+  - pagination-compatibility-v1@1
+  - parameter-alias-v1@1
   - redacted-audit-log-v1@1
   - refactor-pricing-v1@1
+  - retry-backoff-v1@1
   - retry-delivery-v1@1
+  - session-expiry-v1@1
+  - timeout-cleanup-v1@1
+  - token-log-redaction-v1@1
+  - workspace-path-authorization-v1@1
 reviewer:
   adapter: codex-cli
   model: gpt-5.6-terra

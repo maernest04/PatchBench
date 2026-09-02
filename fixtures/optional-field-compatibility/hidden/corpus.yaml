@@ -1,0 +1,8 @@
+author_rationale: Optional API fields must not alter legacy serialized responses.
+candidate_plausibility: The regression adds an optional field unconditionally.
+difficulty: low
+confound_review: Public tests supply the new field without covering omitted values.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

@@ -1,0 +1,6 @@
+fault_id: request-log-leaks-authorization
+category: safety
+affected_paths:
+  - token_log.py
+affected_symbols:
+  - format_request_log

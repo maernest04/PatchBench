@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from patchbench.models import ReviewerFinding, Task
+from patchbench.models import REVIEW_CATEGORIES, ReviewerFinding, Task
 from patchbench.workspace import PatchApplicationError, PatchValidationError, create_candidate_workspace
 
 
@@ -33,6 +33,7 @@ class ReviewerBudget:
 class ReviewerAttempt:
     finding: ReviewerFinding | None
     duration_seconds: float
+    raw_output: str
 
 
 class ReviewerAdapter(Protocol):
@@ -95,13 +96,14 @@ class CommandReviewerAdapter:
             raise ReviewerExecutionError(str(error)) from error
         if not output_path.is_file():
             raise ReviewerExecutionError("reviewer did not produce a finding")
-        return ReviewerAttempt(finding=_load_finding(output_path), duration_seconds=time.monotonic() - started)
+        raw_output = output_path.read_text()
+        return ReviewerAttempt(finding=_load_finding(raw_output), duration_seconds=time.monotonic() - started, raw_output=raw_output)
 
 
-def _load_finding(path: Path) -> ReviewerFinding | None:
+def _load_finding(raw_output: str) -> ReviewerFinding | None:
     try:
-        raw = json.loads(path.read_text())
-    except (OSError, json.JSONDecodeError) as error:
+        raw = json.loads(raw_output)
+    except json.JSONDecodeError as error:
         raise ReviewerExecutionError("reviewer output is not valid JSON") from error
     if raw is None:
         return None
@@ -111,11 +113,12 @@ def _load_finding(path: Path) -> ReviewerFinding | None:
     rationale = raw.get("rationale")
     affected_paths = _load_strings(raw, "affected_paths")
     affected_symbols = _load_strings(raw, "affected_symbols")
-    if category not in {"correctness", "preservation", "safety", "reliability", "efficiency"}:
+    verification_command = _load_command(raw)
+    if category not in REVIEW_CATEGORIES:
         raise ReviewerExecutionError("reviewer output has an invalid category")
     if not isinstance(rationale, str) or not rationale.strip():
         raise ReviewerExecutionError("reviewer output rationale must be a non-empty string")
-    return ReviewerFinding(category, affected_paths, affected_symbols, rationale)
+    return ReviewerFinding(category, affected_paths, affected_symbols, rationale, verification_command)
 
 
 def _load_strings(raw: dict, field: str) -> tuple[str, ...]:
@@ -123,3 +126,12 @@ def _load_strings(raw: dict, field: str) -> tuple[str, ...]:
     if not isinstance(values, list) or any(not isinstance(value, str) or not value.strip() for value in values):
         raise ReviewerExecutionError(f"reviewer output {field} must be a list of strings")
     return tuple(values)
+
+
+def _load_command(raw: dict) -> tuple[str, ...] | None:
+    value = raw.get("verification_command")
+    if value is None:
+        return None
+    if not isinstance(value, list) or not value or any(not isinstance(item, str) or not item for item in value):
+        raise ReviewerExecutionError("reviewer output verification_command must be a non-empty list of strings")
+    return tuple(value)

@@ -1,0 +1,8 @@
+author_rationale: Refactors must preserve callback ordering guarantees used by integrations.
+candidate_plausibility: The regression changes callback storage to an unordered collection.
+difficulty: medium
+confound_review: Public tests register one callback and do not expose ordering behavior.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

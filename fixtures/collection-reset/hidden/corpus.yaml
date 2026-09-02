@@ -1,0 +1,8 @@
+author_rationale: Mutable collection resets must preserve references held by observers.
+candidate_plausibility: The regression replaces the collection while clearing its contents.
+difficulty: medium
+confound_review: Public tests check empty contents without exposing object identity.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

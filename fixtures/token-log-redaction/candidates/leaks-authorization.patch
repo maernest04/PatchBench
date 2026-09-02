@@ -1,0 +1,7 @@
+diff --git a/token_log.py b/token_log.py
+--- a/token_log.py
++++ b/token_log.py
+@@ -1,2 +1,2 @@
+ def format_request_log(request_id, authorization):
+-    return f"request id={request_id}"
++    return f"request id={request_id} authorization={authorization}"

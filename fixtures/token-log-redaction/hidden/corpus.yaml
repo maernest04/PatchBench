@@ -1,0 +1,8 @@
+author_rationale: Diagnostic logs must preserve observability without disclosing tokens.
+candidate_plausibility: The regression logs the authorization field directly while adding request context.
+difficulty: low
+confound_review: Public tests require the field name without using a secret value.
+deterministic_environment:
+  image: patchbench-python-pytest:0.1
+  network: none
+hidden_evaluator_evidence: tests/integration/test_pilot_corpus.py

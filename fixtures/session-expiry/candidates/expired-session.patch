@@ -1,0 +1,10 @@
+diff --git a/session_store.py b/session_store.py
+index 509b61a..670cc9f 100644
+--- a/session_store.py
++++ b/session_store.py
+@@ -10,4 +10,4 @@ class SessionStore:
+         }
+ 
+     def get_session(self, session_id, now):
+-        raise NotImplementedError
++        return self.sessions.get(session_id)
