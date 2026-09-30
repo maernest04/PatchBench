@@ -34,7 +34,7 @@ Private ground truth + deterministic scorer
 
 ## Benchmark direction
 
-The evaluator establishes each candidate's ground truth. The pilot corpus contains six plausible, visible-test-passing regressions and the reviewer harness supports structured findings from a public-only workspace. `patchbench review-report` aggregates stored reviewer outcomes; controlled repeated experiments and executable reviewer artifacts remain future work.
+The evaluator establishes each candidate's ground truth. The current `pilot-v1` corpus contains 18 plausible, visible-test-passing regressions, with corpus metadata and task-manifest hashes recorded in `corpus/pilot-v1.yaml`. The reviewer harness supports structured findings and optional executable verification artifacts from a public-only workspace. `patchbench review-report` aggregates stored reviewer outcomes; a complete frozen, repeated comparison experiment remains future work.
 
 ## Repository guide
 

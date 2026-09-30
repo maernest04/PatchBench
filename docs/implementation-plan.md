@@ -2,7 +2,7 @@
 
 ## Completed foundation
 
-PatchBench can apply a unified diff to an isolated Docker workspace, run public and hidden pytest, differential, CLI, API, and policy checks, classify results as `PASS`, `FAIL`, or `INCONCLUSIVE`, and retain replayable evidence. It includes six Python fixtures, candidate-generating and reviewer adapters, working-tree verification, Codex integration, and stored run and reviewer reporting.
+PatchBench can apply a unified diff to an isolated Docker workspace, run public and hidden pytest, differential, CLI, API, and policy checks, classify results as `PASS`, `FAIL`, or `INCONCLUSIVE`, and retain replayable evidence. It includes an 18-task Python corpus, candidate-generating and reviewer adapters, working-tree verification, Codex integration, and stored run and reviewer reporting.
 
 ## Phase 8: Reviewer-regression corpus
 
@@ -14,15 +14,15 @@ Create a curated corpus of plausible incorrect patches that pass visible tests b
 
 - [x] Define a reviewer-finding schema and private ground-truth labels for the first task.
 - [x] Define task authoring rules: one primary hidden regression, one correct reference, one plausible incorrect candidate, and public-test-pass proof.
-- [x] Build a six-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
-- [ ] Record per-task author rationale, candidate plausibility review, deterministic environment, and hidden-evaluator evidence without leaking the fault to reviewer agents.
+- [x] Build an 18-task pilot spanning state/lifecycle, API compatibility, CLI/filesystem behavior, redaction/authorization, refactor preservation, and reliability/error paths.
+- [x] Record per-task author rationale, candidate plausibility review, deterministic environment, and hidden-evaluator evidence without leaking the fault to reviewer agents.
 - [x] Register control and known-regression candidates for each pilot task.
 - [x] Adjudicate the pilot's control-patch false positive and version the clarified public task contract.
-- [ ] Validate each pilot task against its incorrect candidate, correct reference, and at least one irrelevant reviewer finding.
+- [ ] Run Docker-backed validation for every pilot task against its incorrect candidate and correct reference, then retain the replay evidence.
 
 ### Phase 8B: Corpus expansion and quality
 
-- [ ] Expand to 15–25 tasks with at least three tasks per major category.
+- [x] Expand to 15–25 tasks with at least three tasks per major category.
 - [ ] Include both human-authored and observed AI-style failure patterns; label provenance accurately.
 - [ ] Add task-level difficulty and confound review to avoid trivial test-name, diff-size, or naming leaks.
 - [ ] Add a correct-reference and incorrect-candidate replay check to the corpus release process.
@@ -30,7 +30,7 @@ Create a curated corpus of plausible incorrect patches that pass visible tests b
 
 ### Exit criterion
 
-At least six pilot tasks each prove that the incorrect candidate passes public checks, fails a hidden contract, and can be replayed; no public material reveals the task's fault label.
+At least 15 pilot tasks each prove that the incorrect candidate passes public checks, fails a hidden contract, and can be replayed; no public material reveals the task's fault label.
 
 ## Phase 9: Reviewer-agent evaluation harness
 
@@ -45,13 +45,13 @@ Measure whether an AI reviewer identifies the corpus's known regression without 
 - [x] Build a public-only reviewer workspace containing the repository, task, public tests, and incorrect candidate patch.
 - [x] Add a Codex reviewer bridge that produces schema-conforming findings.
 - [x] Implement deterministic scoring against pre-authored ground-truth fault labels.
-- [ ] Validate executable artifacts by running them against the incorrect candidate and correct reference or baseline as appropriate.
-- [ ] Classify detection, executable detection, miss, false positive, and inconclusive independently.
-- [ ] Preserve prompt version, safe adapter metadata, artifacts, scorer output, and replay data.
+- [x] Implement executable-artifact validation against the incorrect candidate and control reference.
+- [x] Classify detection, executable detection, miss, false positive, and inconclusive independently.
+- [x] Preserve prompt version, safe adapter metadata, artifacts, scorer output, and replay data.
 
 ### Exit criterion
 
-One reviewer adapter completes the six-task pilot without hidden-material access, and scorer tests cover correct detection, wrong detection, executable detection, false positive, and infrastructure inconclusive outcomes.
+One reviewer adapter completes the 18-task pilot without hidden-material access, and scorer tests cover correct detection, wrong detection, executable detection, false positive, and infrastructure inconclusive outcomes.
 
 ## Phase 10: Controlled comparison and report
 

@@ -10,7 +10,7 @@ Each versioned task contains a small reproducible repository, public task reques
 
 The known-regression candidate must pass all public checks and fail the hidden contract. The control candidate must pass public and hidden checks. Each task has one primary regression, private ground-truth fault labels, candidate provenance, and no dependency on secrets, external network access, or unmanaged services.
 
-The first corpus will contain 15–25 Python tasks across state/lifecycle behavior, public API compatibility, CLI/filesystem behavior, security/policy, refactor preservation, and reliability/error paths. The pilot now contains one task from each category.
+The first corpus contains 18 Python tasks across state/lifecycle behavior, public API compatibility, CLI/filesystem behavior, security/policy, refactor preservation, and reliability/error paths, with at least three tasks in each category.
 
 ## Reviewer inputs and outputs
 

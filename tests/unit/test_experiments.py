@@ -11,7 +11,7 @@ def test_loads_codex_pilot_experiment():
     assert experiment.identifier == "codex-pilot-v2-terra"
     assert experiment.model == "gpt-5.6-terra"
     assert experiment.attempt_count == 3
-    assert len(experiment.task_keys) == 6
+    assert len(experiment.task_keys) == 18
 
 
 def test_rejects_experiment_without_tasks(tmp_path):

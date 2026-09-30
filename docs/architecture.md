@@ -22,7 +22,7 @@ Benchmark task + reviewer configuration
 
 ## Reviewer benchmark workflow
 
-The evaluator establishes whether a candidate patch is actually incorrect. The reviewer workflow measures whether a configured reviewer command can identify that issue without access to hidden materials. Executable reviewer artifacts remain a later extension.
+The evaluator establishes whether a candidate patch is actually incorrect. The reviewer workflow measures whether a configured reviewer command can identify that issue without access to hidden materials. When supplied, an executable reviewer artifact is run against the known-regression and control candidates and is credited only if it fails on the regression and passes on the control.
 
 ```text
 Public task + repository + candidate patch
@@ -72,7 +72,7 @@ Creates human-readable and machine-readable candidate results. The benchmark rep
 
 ### Reviewer scorer
 
-The scorer matches a reviewer finding against task-authored ground-truth labels. It records detected, missed, false-positive, or inconclusive outcomes without changing candidate ground truth. A later extension will validate reviewer-produced verification artifacts by execution.
+The scorer matches a reviewer finding against task-authored ground-truth labels. It records detected, executable-detected, missed, false-positive, or inconclusive outcomes without changing candidate ground truth.
 
 ## Repository layout
 
